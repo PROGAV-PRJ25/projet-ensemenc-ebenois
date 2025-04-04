@@ -1,65 +1,35 @@
+using System.Security.Claims;
+
 public class Potager
 {
     public int Numero {get; private set;}
     public static int NumeroSuivant = 1;
-    public int Temperature {get; private set;}
-    public int Pluviometrie {get; private set;}
-    public string Pays;
     public int[] Size {get; private set;}
     public string[,] PotagerGrille;
-    public string Saison {get; private set;}
     public List<Legume> ListLegumes {get; private set;}
+    public int Jour {get; private set;}
+    public Climat? Climat { get; private set; }
     public Potager(int[] size, string pays)
     {
         Size = size;
         PotagerGrille = new string[size[0],size[1]];
         ListLegumes = new List<Legume>();
-        Pays=pays;
-        Saison="printemps";
-        Temperature = 0;
-        Pluviometrie = 0; 
+        Jour = 1;
         Numero = NumeroSuivant;
         NumeroSuivant++;
-        Initialiser();
-    }
-    public void ChangementSaison()
-    {
-        switch (Pays)
+        switch (pays)
         {
             case "France":
-                switch (Saison)
-                {
-                    case "printemps":
-                        Temperature = 12;
-                        Pluviometrie = 164;
-                        break;
-                }
+                Climat = new France();
                 break;
             case "Madagascar":
-                switch (Saison)
-                {
-                    case "printemps":
-                        Temperature = 22;
-                        Pluviometrie = 52;
-                        break;
-                }
+                Climat = new Madagascar();
                 break;
-            case "PlacinLand":
-                switch (Saison)
-                {
-                    case "printemps":
-                        Temperature = 15;
-                        Pluviometrie = 70;
-                        Saison = "automne";
-                        break;
-                    case "automne":
-                        Temperature = 15;
-                        Pluviometrie = 70;
-                        Saison = "printemps";
-                        break;
-                }
+            case "Placinland":
+                Climat = new Placinland();
                 break;
         }
+        Initialiser();
     }
     public void Initialiser()
     {
@@ -71,18 +41,15 @@ public class Potager
             }
         }
     }
-    public void Ajouter(Legume legume)
-    {
-        ListLegumes.Add(legume);
-    }
     public void Information()
     {
         int size = 70;
         //▛ ▜ ▟ ▙ ▀ ▄ ▌▐
         Console.ForegroundColor = ConsoleColor.Gray;
         string message ="▛";
+        string titre = $"RECAPITULATIF - JOUR {Jour}";
         for (int i = 0; i<size/2; i++) {message+="▀";}
-        message+="RECAPITULATIF";
+        message+=titre;
         for (int i = 0; i<size/2; i++) {message+="▀";}
         message+="▜\n";
         foreach (Legume legume in ListLegumes)
@@ -92,15 +59,36 @@ public class Potager
             Console.Write(legume);
             Console.ForegroundColor = ConsoleColor.Gray;
             message="";
-            for (int i = 0; i<size+13-legume.ToString().Length; i++) {message+=" ";}
+            for (int i = 0; i < size + titre.Length - legume.ToString()?.Length; i++) { message += " "; }
             message+= "▐\n";
         }  
         message+="▙"; 
-        for (int i = 0; i<size+13; i++) {message+="▄";}
+        for (int i = 0; i<size+titre.Length; i++) {message+="▄";}
         message+="▟\n"; 
         Console.WriteLine(message);
     }
-    public override string ToString()
+    public void Planter(string nom,int x,int y)
+    {
+        switch (nom)
+        {
+            case "Patate":
+                ListLegumes.Add(new Patate(x,y));
+                break;
+            case "Champignon":
+                ListLegumes.Add(new Champignon(x,y));
+                break;
+        }
+    }
+    public void NouveauJour()
+    {
+        Jour+=1;
+        foreach (Legume legume in ListLegumes)
+        {
+            legume.Grandir(1);
+        }
+        Console.WriteLine(this);
+    }
+    public void Afficher()
     {
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Votre Potager:");
@@ -137,6 +125,12 @@ public class Potager
                 message+="--";
             }
         message+="-o\n";
-        return message;
+        Console.WriteLine(message);
+    }
+    public override string ToString()
+    {
+        Afficher();
+        Information();
+        return "";
     }
 }

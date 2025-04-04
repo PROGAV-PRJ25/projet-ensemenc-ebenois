@@ -1,36 +1,44 @@
 public abstract class Legume
 {
-    public abstract string Image { get;}
-    public int X {get; private set;}
-    public int Y {get; private set;}
-    public int Croissance {get; private set;}
-    public string Etat {get; private set;}
+    public abstract string[] Image { get;}
+    public abstract string Nom { get;}
+    public abstract int TempsCroissance { get;}
+    public int X {get; protected set;}
+    public int Y {get; protected set;}
+    public int Croissance {get; protected set;}
+    public string? Etat {get; protected set;}
     public Legume(int x,int y)
     {
         X=x;
         Y=y;
-        Croissance=100;
-        Etat=UpdateEtat();
+        Croissance=0;
+        UpdateEtat();
     }
-    public string UpdateEtat()
+    public void UpdateEtat()
     {
         if (Croissance==0)
         {
-            return("graine");
+            Etat="graine";
         }
-        else if (Croissance==100)
+        else if (Croissance>=TempsCroissance)
         {
-            return("adulte");
+            Etat="adulte";
         }
         else
         {
-            return("jeune");
+            Etat="jeune";
         }
     }
-    public virtual string EtatImage()
+    public virtual string EtatImage() {return "";}
+    public void Grandir(int multiplicateur)
     {
-        string image ="";
-        return image;
+        Croissance+=1*multiplicateur;
+        UpdateEtat();
+    }
+    public override string ToString()
+    {
+        string message = $"Coordonnées: ({X},{Y}) - Type: {Nom} {Image[0]} - Croissance: {Croissance*100/TempsCroissance} % - Etat: {Etat}";
+        return message;
     }
     /*public string Image()
     {
