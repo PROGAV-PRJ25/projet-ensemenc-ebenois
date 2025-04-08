@@ -5,13 +5,15 @@ public abstract class Legume
     public abstract int TempsCroissance { get;}
     public int X {get; protected set;}
     public int Y {get; protected set;}
-    public int Croissance {get; protected set;}
-    public string? Etat {get; protected set;}
-    public Legume(int x,int y)
+    public int Croissance {get; private set;}
+    public string? Etat {get; private set;}
+    public int Graine;
+    public Legume(int x,int y, int nombre)
     {
         X=x;
         Y=y;
         Croissance=0;
+        Graine=nombre;
         UpdateEtat();
     }
     public void UpdateEtat()
@@ -30,14 +32,16 @@ public abstract class Legume
         }
     }
     public virtual string EtatImage() {return "";}
-    public void Grandir(int multiplicateur)
+    public void Grandir(int engrais)
     {
-        Croissance+=1*multiplicateur;
+        Croissance+=1*engrais;
         UpdateEtat();
     }
     public override string ToString()
     {
-        string message = $"Coordonnées: ({X},{Y}) - Type: {Nom} {Image[0]} - Croissance: {Croissance*100/TempsCroissance} % - Etat: {Etat}";
+        string message = "";
+        if (Graine==0) {message = $" ▪ Coordonnées: ({X},{Y}) - Type: {Nom} {Image[0]} - Croissance: {Croissance*100/TempsCroissance} % - Etat: {Etat}";}
+        else {message = $" ▪ Type: {Nom} {Image[0]} - Nombre de graines: {Graine}";}
         return message;
     }
     /*public string Image()

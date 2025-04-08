@@ -1,11 +1,9 @@
 public class Placinland:Climat{
+    public override string Pays => "Placinland";
     public override string[] Saison => ["Printemps","Automne"];
-
+    public override string[] Image => ["⛅","🌞","☔","⚡"];
     public override int[] Temperature => [15];
-    public override int Pluviometrie => 70;
+    public override int[] Pluviometrie => [70];
     public Placinland():base(){}
-    public override string ChangementSaison(int date)
-    {
-        return Saison[date%4];
-    }
+    public override int SaisonDuree => 4;
 }
