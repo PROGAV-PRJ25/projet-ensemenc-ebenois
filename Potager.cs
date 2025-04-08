@@ -257,6 +257,7 @@ public class Potager
     //Affiche le potager et le récpitulatif
     public override string ToString()
     {
+        Console.Clear();
         AfficherPotager();
         AfficherRecapitulatif();
         return "";
