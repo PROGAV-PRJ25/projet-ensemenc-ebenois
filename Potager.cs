@@ -1,66 +1,42 @@
+using System.Reflection.Metadata;
+using System.Security.Claims;
+
 public class Potager
 {
     public int Numero {get; private set;}
     public static int NumeroSuivant = 1;
-    public int Temperature {get; private set;}
-    public int Pluviometrie {get; private set;}
-    public string Pays;
     public int[] Size {get; private set;}
     public string[,] PotagerGrille;
-    public string Saison {get; private set;}
     public List<Legume> ListLegumes {get; private set;}
+    public int Jour {get; private set;}
+    public Climat? Climat { get; private set; }
+    public Inventaire? Inventaire { get; private set; }
+
     public Potager(int[] size, string pays)
     {
         Size = size;
         PotagerGrille = new string[size[0],size[1]];
         ListLegumes = new List<Legume>();
-        Pays=pays;
-        Saison="printemps";
-        Temperature = 0;
-        Pluviometrie = 0; 
-        Numero = NumeroSuivant;
-        NumeroSuivant++;
-        Initialiser();
-    }
-    public void ChangementSaison()
-    {
-        switch (Pays)
+        Jour = 0;
+        Inventaire = new Inventaire();
+        switch (pays)
         {
             case "France":
-                switch (Saison)
-                {
-                    case "printemps":
-                        Temperature = 12;
-                        Pluviometrie = 164;
-                        break;
-                }
+                Climat = new France();
                 break;
             case "Madagascar":
-                switch (Saison)
-                {
-                    case "printemps":
-                        Temperature = 22;
-                        Pluviometrie = 52;
-                        break;
-                }
+                Climat = new Madagascar();
                 break;
-            case "PlacinLand":
-                switch (Saison)
-                {
-                    case "printemps":
-                        Temperature = 15;
-                        Pluviometrie = 70;
-                        Saison = "automne";
-                        break;
-                    case "automne":
-                        Temperature = 15;
-                        Pluviometrie = 70;
-                        Saison = "printemps";
-                        break;
-                }
+            case "Placinland":
+                Climat = new Placinland();
                 break;
         }
+        Initialiser();
+        Numero = NumeroSuivant;
+        NumeroSuivant++;
     }
+
+    //crée un potager vide
     public void Initialiser()
     {
         for (int i = 0; i<Size[0]; i++)
@@ -71,36 +47,174 @@ public class Potager
             }
         }
     }
-    public void Ajouter(Legume legume)
+
+    //Affiche un récapitulatif de divers informations
+    public void AfficherRecapitulatif()
     {
-        ListLegumes.Add(legume);
-    }
-    public void Information()
-    {
-        int size = 70;
-        //▛ ▜ ▟ ▙ ▀ ▄ ▌▐
-        Console.ForegroundColor = ConsoleColor.Gray;
-        string message ="▛";
-        for (int i = 0; i<size/2; i++) {message+="▀";}
-        message+="RECAPITULATIF";
-        for (int i = 0; i<size/2; i++) {message+="▀";}
-        message+="▜\n";
+        int size = 100;
+        string titre = $"RECAPITULATIF - JOUR {Jour+1}";
+
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▛");
+        for (int i = 0; i<size/2; i++) {Console.Write("▀");}
+        Console.BackgroundColor = ConsoleColor.White;
+        Console.Write(titre);
+        Console.BackgroundColor = ConsoleColor.Black;
+        for (int i = 0; i<size/2; i++) {Console.Write("▀");}
+        Console.Write("▜\n▌");
+
+        //Informations sur la météo
+        Climat?.Actualisation(Jour);
+        Console.ForegroundColor = ConsoleColor.White;
+        for (int i = 0; i < (size + titre.Length - Climat?.ToString()?.Length-1)/2; i++) { Console.Write(" "); }
+        Console.Write(Climat);
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        for (int i = 0; i < (size + titre.Length - Climat?.ToString()?.Length-1)/2; i++) { Console.Write(" "); }
+        Console.Write("▐\n");
+
+        //Saut de ligne
+        Console.Write("▌");
+        for (int i = 0; i < size + titre.Length; i++) { Console.Write(" "); }
+        Console.Write("▐\n");
+
+        //Informatons sur les légumes
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▌");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("Légumes:");
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        for (int i = 0; i < size + titre.Length - "Légumes:".Length; i++) {Console.Write(" ");}
+        Console.Write("▐\n");
         foreach (Legume legume in ListLegumes)
         {
-            message+= "▌";
-            Console.Write(message);
-            Console.Write(legume);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            message="";
-            for (int i = 0; i<size+13-legume.ToString().Length; i++) {message+=" ";}
-            message+= "▐\n";
-        }  
-        message+="▙"; 
-        for (int i = 0; i<size+13; i++) {message+="▄";}
-        message+="▟\n"; 
-        Console.WriteLine(message);
+            if (legume.Graine==0)
+            {
+                Console.Write("▌");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(legume);
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                for (int i = 0; i < size + titre.Length - legume.ToString()?.Length; i++) {Console.Write(" ");}
+                Console.Write("▐\n");
+            }
+        } 
+
+        //Saut de ligne
+        Console.Write("▌");
+        for (int i = 0; i < size + titre.Length; i++) { Console.Write(" "); }
+        Console.Write("▐\n");
+
+        //Informations sur l'inventaire
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▌");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("Inventaire:");
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        for (int i = 0; i < size + titre.Length - "Inventaire:".Length; i++) {Console.Write(" ");}
+        Console.Write("▐\n");
+        foreach (Legume legume in ListLegumes)
+        {
+            if (legume.Graine!=0)
+            {
+                Console.Write("▌");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(legume);
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                for (int i = 0; i < size + titre.Length - legume.ToString()?.Length; i++) {Console.Write(" ");}
+                Console.Write("▐\n");
+            }
+        } 
+
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▙"); 
+        for (int i = 0; i<size+titre.Length; i++) {Console.Write("▄");}
+        Console.Write("▟\n"); 
     }
-    public override string ToString()
+
+    //Ajouter dans l'inventaire un légume
+    public void Ajouter(string nom,int nombre)
+    {
+        bool aGraine = false;
+        foreach (Legume legume in ListLegumes)
+        {
+            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
+        }
+        if (aGraine)
+        {
+            foreach (Legume legume in ListLegumes)
+                {
+                    if(legume.Nom==nom && legume.Graine!=0) {legume.Graine+=nombre;}
+                }
+        }
+        else 
+        {
+            switch (nom)
+                {
+                    case "Patate":
+                        ListLegumes.Add(new Patate(0,0,nombre));
+                        break;
+                    case "Champignon":
+                        ListLegumes.Add(new Champignon(0,0,nombre));
+                        break;
+                }
+            }
+    }
+
+    //Plante un légume
+    public void Planter(string nom,int x,int y)
+    {
+        bool estPlanté = false;
+        bool emplacementLibre = true;
+        bool aGraine = false;
+        foreach (Legume legume in ListLegumes)
+        {
+            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
+        }
+        if (aGraine)
+        {
+            foreach (Legume legume in ListLegumes)
+            {
+                if(legume.Nom==nom && x==legume.X && y==legume.Y && legume.Graine==0) {emplacementLibre=false;}
+            }
+            if (emplacementLibre)
+            {
+                foreach (Legume legume in ListLegumes)
+                {
+                    if(legume.Nom==nom && legume.Graine!=0) 
+                    {
+                        switch (nom)
+                        {
+                            case "Patate":
+                                if (legume.Graine==1) {ListLegumes.Remove(legume);}
+                                else {legume.Graine-=1;}
+                                ListLegumes.Add(new Patate(x,y,0));
+                                estPlanté=true;
+                                break;
+                            case "Champignon":
+                                if (legume.Graine==1) {ListLegumes.Remove(legume);}
+                                else {legume.Graine-=1;}
+                                ListLegumes.Add(new Champignon(x,y,0));
+                                estPlanté=true;
+                                break;
+                        }
+                    }
+                    if (estPlanté) {break;}
+                }
+            }
+        }
+    }
+
+    //Passe à la journée suivante
+    public void NouveauJour()
+    {
+        Jour+=1;
+        foreach (Legume legume in ListLegumes)
+        {
+            if (legume.Graine==0) {legume.Grandir(1);}
+        }
+    }
+
+    //Affiche le potager
+    public void AfficherPotager()
     {
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Votre Potager:");
@@ -118,7 +232,7 @@ public class Potager
             {
                 foreach (Legume legume in ListLegumes)
                 {
-                    if (legume.X==x && legume.Y==y)
+                    if (legume.X==x && legume.Y==y && legume.Graine==0)
                     {
                         message+=legume.EtatImage();
                         emplacementVide=false;
@@ -137,6 +251,14 @@ public class Potager
                 message+="--";
             }
         message+="-o\n";
-        return message;
+        Console.WriteLine(message);
+    }
+
+    //Affiche le potager et le récpitulatif
+    public override string ToString()
+    {
+        AfficherPotager();
+        AfficherRecapitulatif();
+        return "";
     }
 }
