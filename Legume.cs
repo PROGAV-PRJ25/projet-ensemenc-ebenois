@@ -34,8 +34,10 @@ public abstract class Legume
     public virtual string EtatImage() {return "";}
     public void Grandir(int engrais)
     {
-        Croissance+=1*engrais;
-        UpdateEtat();
+        if (Croissance<TempsCroissance){
+            Croissance+=1+engrais;
+            UpdateEtat();
+        }
     }
     public override string ToString()
     {
