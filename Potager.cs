@@ -19,21 +19,20 @@ public class Potager
         ListLegumes = new List<Legume>();
         Jour = 0;
         Inventaire = new Inventaire();
-        switch (pays)
-        {
-            case "France":
-                Climat = new France();
-                break;
-            case "Madagascar":
-                Climat = new Madagascar();
-                break;
-            case "Placinland":
-                Climat = new Placinland();
-                break;
-        }
+        Climat = CreateClimat(pays);
         Initialiser();
         Numero = NumeroSuivant;
         NumeroSuivant++;
+    }
+
+    private Climat CreateClimat(string pays)
+    {
+        return pays switch
+        {
+            "France" => new France(),
+            "Madagascar" => new Madagascar(),
+            "Placinland" => new Placinland(),
+        };
     }
 
     //crée un potager vide
@@ -54,80 +53,89 @@ public class Potager
         int size = 100;
         string titre = $"RECAPITULATIF - JOUR {Jour+1}";
 
+        AfficherBordure(titre, size);
+
+        //Informations sur la météo
+        Climat?.Actualisation(Jour);
+        AfficherInfo(Climat.ToString(), size, titre.Length);
+
+        //Informations sur les légumes
+        AfficherLegumes("Légumes", size, titre.Length);
+
+        //Informations sur l'inventaire
+        AfficherLegumes("Inventaire", size, titre.Length);
+
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▙");
+        for (int i = 0; i < size + titre.Length; i++) Console.Write("▄");
+        Console.Write("▟\n");
+    }
+
+    private void AfficherBordure(string titre, int size)
+    {
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.Write("▛");
         for (int i = 0; i<size/2; i++) {Console.Write("▀");}
         Console.BackgroundColor = ConsoleColor.White;
         Console.Write(titre);
-        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ResetColor();
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
         for (int i = 0; i<size/2; i++) {Console.Write("▀");}
         Console.Write("▜\n▌");
+    }
 
-        //Informations sur la météo
-        Climat?.Actualisation(Jour);
+    //Informations sur la météo
+    private void AfficherInfo(string value, int size, int titreLength)
+    {
         Console.ForegroundColor = ConsoleColor.White;
-        for (int i = 0; i < (size + titre.Length - Climat?.ToString()?.Length-1)/2; i++) { Console.Write(" "); }
-        Console.Write(Climat);
+        int padding = (size+titreLength-(value.Length))/2;
+        for (int i = 0; i<padding; i++) {Console.Write(" ");}
+        Console.Write(value);
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int i = 0; i < (size + titre.Length - Climat?.ToString()?.Length-1)/2; i++) { Console.Write(" "); }
+        if (2*padding+value.Length!=size+titreLength){
+            for (int i = 0; i<padding; i++) {Console.Write(" ");}
+        } else {
+            for (int i = 0; i<padding-1; i++) {Console.Write(" ");}
+        }
         Console.Write("▐\n");
+    }
 
-        //Saut de ligne
-        Console.Write("▌");
-        for (int i = 0; i < size + titre.Length; i++) { Console.Write(" "); }
-        Console.Write("▐\n");
-
-        //Informatons sur les légumes
+    //Informatons sur les légumes
+    private void AfficherLegumes(string label, int size, int titreLength)
+    {
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.Write("▌");
         Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("Légumes:");
+        Console.Write(label + ":");
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int i = 0; i < size + titre.Length - "Légumes:".Length; i++) {Console.Write(" ");}
+        for (int i = 0; i < size + titreLength - label.Length - 1; i++) {Console.Write(" ");}
         Console.Write("▐\n");
+
         foreach (Legume legume in ListLegumes)
         {
-            if (legume.Graine==0)
+            if (legume.Graine!=0 && label=="Inventaire")
             {
                 Console.Write("▌");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(legume);
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                for (int i = 0; i < size + titre.Length - legume.ToString()?.Length; i++) {Console.Write(" ");}
+                for (int i = 0; i < size + titreLength - legume.ToString()?.Length; i++) {Console.Write(" ");}
                 Console.Write("▐\n");
             }
-        } 
-
-        //Saut de ligne
-        Console.Write("▌");
-        for (int i = 0; i < size + titre.Length; i++) { Console.Write(" "); }
-        Console.Write("▐\n");
-
-        //Informations sur l'inventaire
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.Write("▌");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("Inventaire:");
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int i = 0; i < size + titre.Length - "Inventaire:".Length; i++) {Console.Write(" ");}
-        Console.Write("▐\n");
-        foreach (Legume legume in ListLegumes)
-        {
-            if (legume.Graine!=0)
+            if (legume.Graine==0 && label=="Légumes")
             {
                 Console.Write("▌");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(legume);
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                for (int i = 0; i < size + titre.Length - legume.ToString()?.Length; i++) {Console.Write(" ");}
+                for (int i = 0; i < size + titreLength - legume.ToString()?.Length; i++) {Console.Write(" ");}
                 Console.Write("▐\n");
             }
-        } 
+        }
 
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.Write("▙"); 
-        for (int i = 0; i<size+titre.Length; i++) {Console.Write("▄");}
-        Console.Write("▟\n"); 
+        Console.Write("▌");
+        for (int i = 0; i < size + titreLength; i++) {Console.Write(" ");}
+        Console.Write("▐\n");
     }
 
     //Ajouter dans l'inventaire un légume
@@ -209,7 +217,7 @@ public class Potager
         Jour+=1;
         foreach (Legume legume in ListLegumes)
         {
-            if (legume.Graine==0) {legume.Grandir(1);}
+            if (legume.Graine==0) {legume.Grandir(0);}
         }
     }
 
@@ -222,14 +230,16 @@ public class Potager
         Console.ForegroundColor = ConsoleColor.DarkGray;
         string message = "o";
         for (int x = 0; x < Size[0]; x++){
-                message+="--";
+            message+="--";
             }
-        message+="-o\n";  
+        message += "-o\n";
+
         for (int y = 0; y < Size[1]; y++)
-        {    
-            message += "¦";     
+        {
+            message += "¦";
             for (int x = 0; x < Size[0]; x++)
             {
+                emplacementVide = true;
                 foreach (Legume legume in ListLegumes)
                 {
                     if (legume.X==x && legume.Y==y && legume.Graine==0)
@@ -242,24 +252,25 @@ public class Potager
                 {
                     message+="🟫";
                 }
-                emplacementVide=true;
             }
             message+=" ¦\n";
         }
+
         message+="o";
         for (int x = 0; x < Size[0]; x++){
-                message+="--";
-            }
+            message+="--";
+        }
         message+="-o\n";
         Console.WriteLine(message);
     }
 
-    //Affiche le potager et le récpitulatif
+    //Affiche le potager et le récapitulatif
     public override string ToString()
     {
         Console.Clear();
         AfficherPotager();
         AfficherRecapitulatif();
+        Console.WriteLine("Utilise les flèches ↑ ↓ pour naviguer, Entrée pour sélectionner :\n");
         return "";
     }
 }
