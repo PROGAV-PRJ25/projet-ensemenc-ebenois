@@ -3,7 +3,21 @@ public class Jeu{
     public Jeu(){
         Sauvegardes = new List<Potager>();
         AfficherTitle();
-        AfficherMenu();
+        switch (AfficherMenu(["1. Nouvelle Partie 🌾","2. Charger une Partie 🧺","3. Options ⚙️","4. Crédits 🖋️","5. Quitter 🌙"])){
+            case 0:
+                switch (AfficherMenu(["1. France FR","2. Madagascar MD","3. Placinland PL"])){
+                    case 0:
+                        CreerPotager("France");
+                        break;
+                    case 1:
+                        CreerPotager("Madagascar");
+                        break;
+                    case 2:
+                        CreerPotager("Placinland");
+                        break;
+                }
+                break;
+        }
     }
     public void AfficherTitle(){
         Console.ForegroundColor = ConsoleColor.DarkRed;
@@ -51,10 +65,10 @@ public class Jeu{
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("                  🌱 Le simulateur de potager ultime 🌱                  \n");
     }
-    public void AfficherMenu(){
-        string[] menuItems =["1. Nouvelle Partie 🌾","2. Charger une Partie 🧺","3. Options ⚙️","4. Crédits 🖋️","5. Quitter 🌙"];
-        int selectedIndex = 0;
+
+    public int AfficherMenu(string[] menuItems){
         ConsoleKey key;
+        int selectedIndex = 0;
         do
         {
             Console.Clear();
@@ -90,15 +104,15 @@ public class Jeu{
                     break;
             }
         } while (key != ConsoleKey.Enter);
-        switch (selectedIndex){
-            case 0:
-                CreerPotager();
-                break;
+        return (selectedIndex);
         }
+
+    public void NouvellePartie(){
+
     }
  
-    public void CreerPotager(){
-        Sauvegardes.Add(new Potager([5,5],"France"));
+    public void CreerPotager(string pays){
+        Sauvegardes.Add(new Potager([5,5],pays));
         Sauvegardes[0].Ajouter("Patate",10);
         Sauvegardes[0].Ajouter("Champignon",2);
         for (int i = 0;i<2;i++)
