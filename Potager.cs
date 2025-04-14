@@ -270,6 +270,7 @@ public class Potager
         Console.Clear();
         AfficherPotager();
         AfficherRecapitulatif();
+        Console.ForegroundColor=ConsoleColor.White;
         Console.WriteLine("Utilise les flèches ↑ ↓ pour naviguer, Entrée pour sélectionner :\n");
         return "";
     }
