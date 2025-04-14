@@ -3,15 +3,11 @@ public abstract class Legume
     public abstract string[] Image { get;}
     public abstract string Nom { get;}
     public abstract int TempsCroissance { get;}
-    public int X {get; protected set;}
-    public int Y {get; protected set;}
     public int Croissance {get; private set;}
     public string? Etat {get; private set;}
     public int Graine;
-    public Legume(int x,int y, int nombre)
+    public Legume(int nombre)
     {
-        X=x;
-        Y=y;
         Croissance=0;
         Graine=nombre;
         UpdateEtat();
@@ -39,13 +35,7 @@ public abstract class Legume
             UpdateEtat();
         }
     }
-    public override string ToString()
-    {
-        string message = "";
-        if (Graine==0) {message = $" ▪ Coordonnées: ({X},{Y}) - Type: {Nom} {Image[0]} - Croissance: {Croissance*100/TempsCroissance} % - Etat: {Etat}";}
-        else {message = $" ▪ Type: {Nom} {Image[0]} - Nombre de graines: {Graine}";}
-        return message;
-    }
+
     /*public string Image()
     {
         string image="";

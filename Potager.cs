@@ -3,48 +3,56 @@ using System.Security.Claims;
 
 public class Potager
 {
-    public int Numero {get; private set;}
-    public static int NumeroSuivant = 1;
-    public int[] Size {get; private set;}
-    public string[,] PotagerGrille;
-    public List<Legume> ListLegumes {get; private set;}
+    public int[] Size { get; private set; }
+    public List<Terrain> ListTerrains {get; private set;}
     public int Jour {get; private set;}
     public Climat? Climat { get; private set; }
     public Inventaire? Inventaire { get; private set; }
 
     public Potager(int[] size, string pays)
     {
-        Size = size;
-        PotagerGrille = new string[size[0],size[1]];
-        ListLegumes = new List<Legume>();
+        Size=size;
+        ListTerrains = new List<Terrain>();
         Jour = 0;
         Inventaire = new Inventaire();
-        Climat = CreateClimat(pays);
-        Initialiser();
-        Numero = NumeroSuivant;
-        NumeroSuivant++;
+        CreateClimat(pays,size);
     }
 
-    private Climat CreateClimat(string pays)
+    private void CreateClimat(string pays, int[] size)
     {
-        return pays switch
+        switch (pays)
         {
-            "France" => new France(),
-            "Madagascar" => new Madagascar(),
-            "Placinland" => new Placinland(),
+            case "France":
+                Climat = new France();
+                for (int i = 0; i<size[0]; i++)
+                {
+                    for (int j = 0; j<size[1]; j++)
+                    {
+                        ListTerrains.Add(new Terre([i,j]));
+                    }
+                }
+                break;
+            case "Madagascar":
+                Climat = new Madagascar();
+                for (int i = 0; i<size[0]; i++)
+                {
+                    for (int j = 0; j<size[1]; j++)
+                    {
+                        ListTerrains.Add(new Sable([i,j]));
+                    }
+                }
+                break;
+            case "Placinland":
+                Climat = new Placinland();
+                for (int i = 0; i<size[0]; i++)
+                {
+                    for (int j = 0; j<size[1]; j++)
+                    {
+                        ListTerrains.Add(new Argile([i,j]));
+                    }
+                }
+                break;
         };
-    }
-
-    //crée un potager vide
-    public void Initialiser()
-    {
-        for (int i = 0; i<Size[0]; i++)
-        {
-            for (int j = 0; j<Size[1]; j++)
-            {
-                PotagerGrille[i,j]="";
-            }
-        }
     }
 
     //Affiche un récapitulatif de divers informations
@@ -60,10 +68,10 @@ public class Potager
         AfficherInfo(Climat.ToString(), size, titre.Length);
 
         //Informations sur les légumes
-        AfficherLegumes("Légumes", size, titre.Length);
+        AfficherLegumes(size, titre.Length);
 
         //Informations sur l'inventaire
-        AfficherLegumes("Inventaire", size, titre.Length);
+        Inventaire.AfficherLegumes(size, titre.Length);
 
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.Write("▙");
@@ -101,70 +109,30 @@ public class Potager
     }
 
     //Informatons sur les légumes
-    private void AfficherLegumes(string label, int size, int titreLength)
+    private void AfficherLegumes(int size, int titreLength)
     {
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.Write("▌");
         Console.ForegroundColor = ConsoleColor.White;
-        Console.Write(label + ":");
+        Console.Write("Légumes:");
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int i = 0; i < size + titreLength - label.Length - 1; i++) {Console.Write(" ");}
+        for (int i = 0; i < size + titreLength - "Légumes:".Length; i++) {Console.Write(" ");}
         Console.Write("▐\n");
 
-        foreach (Legume legume in ListLegumes)
+        foreach (Terrain terrain in ListTerrains)
         {
-            if (legume.Graine!=0 && label=="Inventaire")
-            {
+            if(terrain.Legume!=null){
                 Console.Write("▌");
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(legume);
+                Console.Write($" ▪ Coordonnées: ({terrain.Coordonnées[0]},{terrain.Coordonnées[1]}) - Type: {terrain.Legume.Nom} {terrain.Legume.Image[0]} - Croissance: {terrain.Legume.Croissance*100/terrain.Legume.TempsCroissance}% - Etat: {terrain.Legume.Etat}");
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                for (int i = 0; i < size + titreLength - legume.ToString()?.Length; i++) {Console.Write(" ");}
-                Console.Write("▐\n");
-            }
-            if (legume.Graine==0 && label=="Légumes")
-            {
-                Console.Write("▌");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(legume);
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                for (int i = 0; i < size + titreLength - legume.ToString()?.Length; i++) {Console.Write(" ");}
+                for (int i = 0; i < size + titreLength - $" ▪ Coordonnées: ({terrain.Coordonnées[0]},{terrain.Coordonnées[1]}) - Type: {terrain.Legume.Nom} {terrain.Legume.Image[0]} - Croissance: {terrain.Legume.Croissance*100/terrain.Legume.TempsCroissance}% - Etat: {terrain.Legume.Etat}".ToString()?.Length; i++) {Console.Write(" ");}
                 Console.Write("▐\n");
             }
         }
-
         Console.Write("▌");
         for (int i = 0; i < size + titreLength; i++) {Console.Write(" ");}
         Console.Write("▐\n");
-    }
-
-    //Ajouter dans l'inventaire un légume
-    public void Ajouter(string nom,int nombre)
-    {
-        bool aGraine = false;
-        foreach (Legume legume in ListLegumes)
-        {
-            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
-        }
-        if (aGraine)
-        {
-            foreach (Legume legume in ListLegumes)
-                {
-                    if(legume.Nom==nom && legume.Graine!=0) {legume.Graine+=nombre;}
-                }
-        }
-        else 
-        {
-            switch (nom)
-                {
-                    case "Patate":
-                        ListLegumes.Add(new Patate(0,0,nombre));
-                        break;
-                    case "Champignon":
-                        ListLegumes.Add(new Champignon(0,0,nombre));
-                        break;
-                }
-            }
     }
 
     //Plante un légume
@@ -173,36 +141,45 @@ public class Potager
         bool estPlanté = false;
         bool emplacementLibre = true;
         bool aGraine = false;
-        foreach (Legume legume in ListLegumes)
+        foreach (Legume legume in Inventaire.ListLegumes)
         {
             if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
         }
         if (aGraine)
         {
-            foreach (Legume legume in ListLegumes)
+            foreach (Legume legume in Inventaire.ListLegumes)
             {
-                if(legume.Nom==nom && x==legume.X && y==legume.Y && legume.Graine==0) {emplacementLibre=false;}
+                if(x<0 || x>=Size[0] || y<0 || y>=Size[1]) {emplacementLibre=false;}
+                foreach (Terrain terrain in ListTerrains)
+                {
+                    if(terrain.Legume!=null) {emplacementLibre=false;}
+                }
             }
             if (emplacementLibre)
             {
-                foreach (Legume legume in ListLegumes)
+                foreach (Legume legume in Inventaire.ListLegumes)
                 {
                     if(legume.Nom==nom && legume.Graine!=0) 
                     {
-                        switch (nom)
+                        foreach (Terrain terrain in ListTerrains)
                         {
-                            case "Patate":
-                                if (legume.Graine==1) {ListLegumes.Remove(legume);}
-                                else {legume.Graine-=1;}
-                                ListLegumes.Add(new Patate(x,y,0));
-                                estPlanté=true;
-                                break;
-                            case "Champignon":
-                                if (legume.Graine==1) {ListLegumes.Remove(legume);}
-                                else {legume.Graine-=1;}
-                                ListLegumes.Add(new Champignon(x,y,0));
-                                estPlanté=true;
-                                break;
+                            if (terrain.Coordonnées[0]==x && terrain.Coordonnées[1]==y){
+                                switch (nom)
+                                {
+                                    case "Patate":
+                                        if (legume.Graine==1) {Inventaire.ListLegumes.Remove(legume);}
+                                        else {legume.Graine-=1;}
+                                        terrain.Legume =new Patate(0);
+                                        estPlanté=true;
+                                        break;
+                                    case "Champignon":
+                                        if (legume.Graine==1) {Inventaire.ListLegumes.Remove(legume);}
+                                        else {legume.Graine-=1;}
+                                        terrain.Legume =new Champignon(0);
+                                        estPlanté=true;
+                                        break;
+                                }
+                            }
                         }
                     }
                     if (estPlanté) {break;}
@@ -211,22 +188,11 @@ public class Potager
         }
     }
 
-    //Passe à la journée suivante
-    public void NouveauJour()
-    {
-        Jour+=1;
-        foreach (Legume legume in ListLegumes)
-        {
-            if (legume.Graine==0) {legume.Grandir(0);}
-        }
-    }
-
     //Affiche le potager
     public void AfficherPotager()
     {
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Votre Potager:");
-        bool emplacementVide = true;
         Console.ForegroundColor = ConsoleColor.DarkGray;
         string message = "o";
         for (int x = 0; x < Size[0]; x++){
@@ -239,18 +205,8 @@ public class Potager
             message += "¦";
             for (int x = 0; x < Size[0]; x++)
             {
-                emplacementVide = true;
-                foreach (Legume legume in ListLegumes)
-                {
-                    if (legume.X==x && legume.Y==y && legume.Graine==0)
-                    {
-                        message+=legume.EtatImage();
-                        emplacementVide=false;
-                    }
-                }
-                if (emplacementVide)
-                {
-                    message+="🟫";
+                foreach (Terrain terrain in ListTerrains){
+                    if (terrain.Coordonnées[0]== x && terrain.Coordonnées[1]==y) {message+=terrain.ToString();}
                 }
             }
             message+=" ¦\n";
