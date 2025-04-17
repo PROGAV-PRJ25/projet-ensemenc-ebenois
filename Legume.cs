@@ -28,10 +28,11 @@ public abstract class Legume
         }
     }
     public virtual string EtatImage() {return "";}
-    public void Grandir(int engrais)
+    public void Grandir(bool engrais)
     {
         if (Croissance<TempsCroissance){
-            Croissance+=1+engrais;
+            if (engrais) {Croissance+=2;}
+            else {Croissance+=1;}
             UpdateEtat();
         }
     }

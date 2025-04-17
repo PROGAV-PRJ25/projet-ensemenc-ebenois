@@ -9,8 +9,8 @@ public abstract class Terrain
 
     public Terrain(int[] coordonnées){
         Coordonnées = coordonnées;
+        Engrais=false;
     }
-    
     public override string ToString()
     {
         string message = "";

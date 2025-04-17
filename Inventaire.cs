@@ -13,23 +13,29 @@ public class Inventaire
     {
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.Write("▌");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("Inventaire:");
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int i = 0; i < size + titreLength - "Inventaire:".Length; i++) {Console.Write(" ");}
-        Console.Write("▐\n");
-        foreach (Legume legume in ListLegumes)
-        {
-            Console.Write("▌");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write($" ▪ Type: {legume.Nom} {legume.Image[0]} - Nombre de graines: {legume.Graine}");
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            for (int i = 0; i < size + titreLength - ($" ▪ Type: {legume.Nom} {legume.Image[0]} - Nombre de graines: {legume.Graine}")?.Length; i++) {Console.Write(" ");}
-            Console.Write("▐\n");
-        }
-        Console.Write("▌");
         for (int i = 0; i < size + titreLength; i++) {Console.Write(" ");}
         Console.Write("▐\n");
+        if (ListLegumes.Count()!=0)
+        {
+            foreach (Legume legume in ListLegumes)
+            {
+                Console.Write("▌");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($" ▪ Type: {legume.Nom} {legume.Image[0]} - Nombre de graines: {legume.Graine}");
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                for (int i = 0; i < size + titreLength - ($" ▪ Type: {legume.Nom} {legume.Image[0]} - Nombre de graines: {legume.Graine}")?.Length; i++) {Console.Write(" ");}
+                Console.Write("▐\n");
+            }
+        }
+        else
+        {
+            Console.Write("▌   ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("Vous n'avez rien dans votre inventaire");
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            for (int i = 0; i < size + titreLength - $"   Vous n'avez rien dans votre inventaire"?.Length; i++) {Console.Write(" ");}
+            Console.Write("▐\n");
+        }
     }
 
     //Ajouter dans l'inventaire un légume

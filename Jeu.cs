@@ -198,44 +198,10 @@ Console.ReadKey();
  
     public void CreerPotager(int[] size,string pays){
         Sauvegardes.Add(new Potager(size,pays));
-        Sauvegardes[0].Inventaire.Ajouter("Patate",10);
-        Sauvegardes[0].Inventaire.Ajouter("Champignon",2);
-        for (int i = 0;i<2;i++)
+        do
         {
-            Sauvegardes[0].Planter("Patate",i,i);
-        }
-        Sauvegardes[0].Planter("Champignon",1,2);
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Sauvegardes[0].Planter("Champignon",1,2);
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Sauvegardes[0].Planter("Champignon",1,3);
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Sauvegardes[0].Planter("Champignon",1,4);
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
-        Sauvegardes[0].NouveauJour();
-        Console.WriteLine(Sauvegardes[0]);
-        Console.ReadKey();
+            Sauvegardes[0].Inventaire.Ajouter("Patate",1);
+            Sauvegardes[0].NouveauJour();
+        } while (true);
     }
 }
