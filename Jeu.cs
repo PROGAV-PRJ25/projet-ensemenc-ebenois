@@ -198,10 +198,5 @@ Console.ReadKey();
  
     public void CreerPotager(int[] size,string pays){
         Sauvegardes.Add(new Potager(size,pays));
-        do
-        {
-            Sauvegardes[0].Inventaire.Ajouter("Patate",1);
-            Sauvegardes[0].NouveauJour();
-        } while (true);
     }
 }

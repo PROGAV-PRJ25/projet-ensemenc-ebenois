@@ -38,6 +38,21 @@ public class Inventaire
         }
     }
 
+    public void RetirerLegume(Legume legume)
+    {
+        ListLegumes.Remove(legume);
+    }
+
+    public bool AGraine(string nom)
+    {
+        bool aGraine = false;
+        foreach (Legume legume in ListLegumes)
+        {
+            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
+        }
+        return(aGraine);
+    }
+
     //Ajouter dans l'inventaire un légume
     public void Ajouter(string nom,int nombre)
     {
@@ -65,6 +80,15 @@ public class Inventaire
                         break;
                 }
             }
+    }
+
+    public Legume TrouverLegume(string nom)
+    {
+        foreach (Legume legume in ListLegumes)
+        {
+            if(legume.Nom==nom && legume.Graine!=0) {return legume;}
+        }
+        return null;
     }
 
     public override string ToString(){

@@ -1,6 +1,7 @@
 public class Patate:Legume
 {
-    public override string[] Image => ["🥔","🟫","🌱"];
+    public override string[] Image => ["🥔","🌱"];
+    public override string[] ActionPossible => ["Deterrer","Arroser","Engrais"];
     public override string Nom => "Patate";
     public override int TempsCroissance => 8;
     public Patate(int nombre):base(nombre){}
@@ -8,10 +9,8 @@ public class Patate:Legume
     {
         switch (Croissance)
         {
-            case <1:
-                return(Image[1]);
             default:
-                return(Image[2]);
+                return(Image[1]);
         }
     }
 }

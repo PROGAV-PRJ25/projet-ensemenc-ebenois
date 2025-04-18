@@ -1,16 +1,20 @@
 public abstract class Legume
 {
+    public abstract string[] ActionPossible { get;}
     public abstract string[] Image { get;}
     public abstract string Nom { get;}
     public abstract int TempsCroissance { get;}
     public int Croissance {get; private set;}
     public string? Etat {get; private set;}
+    public bool Arrosé {get; private set;}
+    public bool Engrais {get; private set;}
     public int Graine;
     public Legume(int nombre)
     {
         Croissance=0;
         Graine=nombre;
         UpdateEtat();
+        Arrosé = false;
     }
     public void UpdateEtat()
     {
@@ -28,13 +32,24 @@ public abstract class Legume
         }
     }
     public virtual string EtatImage() {return "";}
-    public void Grandir(bool engrais)
+    public void Grandir()
     {
-        if (Croissance<TempsCroissance){
-            if (engrais) {Croissance+=2;}
+        if (Croissance<TempsCroissance && Arrosé==true){
+            if (Engrais) {Croissance+=2;}
             else {Croissance+=1;}
             UpdateEtat();
+            Engrais=false;
+            Arrosé=false;
         }
+    }
+
+    public void Arroser()
+    {
+        Arrosé = true;
+    }
+    public void MettreEngrais()
+    {
+        Engrais = true;
     }
 
     /*public string Image()
