@@ -43,30 +43,12 @@ public class Inventaire
         ListLegumes.Remove(legume);
     }
 
-    public bool AGraine(string nom)
-    {
-        bool aGraine = false;
-        foreach (Legume legume in ListLegumes)
-        {
-            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
-        }
-        return(aGraine);
-    }
-
     //Ajouter dans l'inventaire un légume
     public void Ajouter(string nom,int nombre)
     {
-        bool aGraine = false;
-        foreach (Legume legume in ListLegumes)
+        if (TrouverLegume(nom)!=null)
         {
-            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
-        }
-        if (aGraine)
-        {
-            foreach (Legume legume in ListLegumes)
-                {
-                    if(legume.Nom==nom && legume.Graine!=0) {legume.Graine+=nombre;}
-                }
+            TrouverLegume(nom).Graine+=nombre;
         }
         else 
         {

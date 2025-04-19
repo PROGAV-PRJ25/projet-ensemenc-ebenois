@@ -446,31 +446,56 @@ public class Potager
         do
         {
             selectedIndex = PotagerEtMeteo([0,0]);
-            PotagerEtAction(selectedIndex);
-        } while (false);
+            if (selectedIndex[1]==Size[1]) {break;}
+            else {PotagerEtAction(selectedIndex);}
+        } while (true);
+        Jour+=1;
     }
 
     //Affiche la meteo
-    public void AfficherMeteo()
+    public int[] AfficherMeteoEtRetour(int[] selectedIndex)
     {
         Climat?.Actualisation(Jour);
-        int Size = 100;
+        int size = 100;
         string titre = $"METEO - JOUR {Jour+1}";
-        int padding = (Size+titre.Length-(Climat.ToString().Length))/2;
+        int paddingMeteo = (size+titre.Length-(Climat.ToString().Length))/2;
+        int paddingBouton = (size+titre.Length-"[ Nouvelle journée ]".Length)/2;
         //Bordure
-        AfficherCalpinBordureHaut(Size,titre);
+        AfficherCalpinBordureHaut(size,titre);
         Console.Write("▌");
         Console.ForegroundColor = ConsoleColor.White;
-        for (int i = 0; i<padding; i++) {Console.Write(" ");}
+        for (int i = 0; i<paddingMeteo; i++) {Console.Write(" ");}
         Console.Write(Climat.ToString());
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        if (2*padding+Climat.ToString().Length!=Size+titre.Length){
-            for (int i = 0; i<padding; i++) {Console.Write(" ");}
+        if (2*paddingMeteo+Climat.ToString().Length!=size+titre.Length){
+            for (int i = 0; i<paddingMeteo; i++) {Console.Write(" ");}
         } else {
-            for (int i = 0; i<padding-1; i++) {Console.Write(" ");}
+            for (int i = 0; i<paddingMeteo-1; i++) {Console.Write(" ");}
         }
-        Console.Write("▐\n");    
-        AfficherCalpinBordureBas(Size,titre);
+        Console.Write("▐\n▌");
+        for (int i = 0; i<size+titre.Length; i++) {Console.Write(" ");}
+        Console.Write("▐\n▌");
+
+        for (int i = 0; i<paddingBouton; i++) {Console.Write(" ");}
+        if (selectedIndex[1]==Size[1])
+        {
+            // Met en surbrillance l'élément sélectionné
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("[ Nouvelle journée ]");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("[ Nouvelle journée ]");
+        }
+        for (int i = 0; i<paddingBouton; i++) {Console.Write(" ");}
+        Console.ForegroundColor = ConsoleColor.DarkCyan;    
+        Console.Write("▐\n");
+
+        AfficherCalpinBordureBas(size,titre);
+        return(selectedIndex);
     }
 
     //Trouve le terrain aus coordonées
@@ -488,36 +513,34 @@ public class Potager
 
     //Affiche un récapitulatif de divers informations
     //Affiche les actions possibles
-    public (string[] actionpossible,int selectedIndex) AfficherAction(int positionInitialeIndex, int[] positionInitialePotager)
+    public (string[] actionpossible, int selectedIndex) AfficherAction(int positionInitialeIndex, int[] positionInitialePotager)
     {
         int Size = 50;
-        string titre = $"ACTION - JOUR {Jour+1}";
+        string titre = $"ACTION - JOUR {Jour + 1}";
         int selectedIndex = positionInitialeIndex;
-        //Bordure
-        AfficherCalpinBordureHaut(Size,titre);
-        string[] actionPossible = [""];
-        foreach (Terrain terrain in ListTerrains)
+
+        AfficherCalpinBordureHaut(Size, titre);
+
+        string[] actionPossible = [];
+
+        var terrain = TrouverTerrain(positionInitialePotager);
+
+        if (terrain?.Legume == null && Inventaire.ListLegumes.Any())
         {
-            if (terrain.Coordonnées[0]==positionInitialePotager[0] && terrain.Coordonnées[1]==positionInitialePotager[1])
-            {
-                if (terrain.Legume==null)
-                {
-                    actionPossible = ["Planter"];
-                }
-                else
-                {
-                    actionPossible = terrain.Legume.ActionPossible;
-                }
-            }
-            
+            actionPossible = ["Planter"];
         }
+        else if (terrain?.Legume != null)
+        {
+            actionPossible = terrain.Legume.ActionPossible;
+        }
+
         for (int i = 0; i < actionPossible.Length; i++)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.Write("▌");
-            if (i==selectedIndex)
+
+            if (i == selectedIndex)
             {
-                // Met en surbrillance l'élément sélectionné
                 Console.BackgroundColor = ConsoleColor.White;
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.Write($"[ {actionPossible[i]} ]");
@@ -528,13 +551,20 @@ public class Potager
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write($"[ {actionPossible[i]} ]");
             }
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int j = 0; j < Size + titre.Length - ($"[ {actionPossible[i]} ]".Length); j++) {Console.Write(" ");}
-        Console.Write("▐\n");
+
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            for (int j = 0; j < Size + titre.Length - ($"[ {actionPossible[i]} ]".Length); j++)
+            {
+                Console.Write(" ");
+            }
+
+            Console.Write("▐\n");
         }
-        AfficherCalpinBordureBas(Size,titre);
-        return(actionPossible, selectedIndex);
+
+        AfficherCalpinBordureBas(Size, titre);
+        return (actionPossible, selectedIndex);
     }
+
 
     public (string[] Graine,int selectedIndex) AfficherInventaire(int positionInitialeIndex, int[] positionInitialePotager)
     {
@@ -580,7 +610,7 @@ public class Potager
     //Plante un légume
     public void Planter(string nom,int[] position)
     {
-        if (Inventaire.AGraine(nom) && TrouverTerrain(position)!=null && TrouverTerrain(position).EmplacementLibre())
+        if (Inventaire.TrouverLegume(nom).Graine!=0 && TrouverTerrain(position)!=null && TrouverTerrain(position).EmplacementLibre())
             {
             switch (nom)
             {
@@ -642,15 +672,15 @@ public class Potager
         do
         {
             AfficherPotager(selectedIndex);
-            AfficherMeteo();
+            AfficherMeteoEtRetour(selectedIndex);
             key = Console.ReadKey(true).Key;
             switch (key)
             {
                 case ConsoleKey.UpArrow:
-                    selectedIndex[1] = (selectedIndex[1] == 0) ? Size[1] - 1 : selectedIndex[1] - 1;
+                    selectedIndex[1] = (selectedIndex[1] == 0) ? Size[1] : selectedIndex[1] - 1;
                     break;
                 case ConsoleKey.DownArrow:
-                    selectedIndex[1] = (selectedIndex[1] + 1) % Size[1];
+                    selectedIndex[1] = (selectedIndex[1] + 1) % (Size[1]+1) ;
                     break;
                 case ConsoleKey.LeftArrow:
                     selectedIndex[0] = (selectedIndex[0] == 0) ? Size[0] - 1 : selectedIndex[0] - 1;
@@ -670,11 +700,30 @@ public class Potager
     {
         ConsoleKey key;
         int selectedIndex = 0;
-        string[] actionpossible = [""]; 
+
+        var terrain = TrouverTerrain(positionInitiale);
+        if (terrain == null) return;
+
+        string[] actionpossible;
+
+        if (terrain.Legume == null)
+        {
+            if (Inventaire.ListLegumes.Count() == 0)
+                return; // pas de graine = rien à afficher
+            else
+                actionpossible = ["Planter"];
+        }
+        else
+        {
+            actionpossible = terrain.Legume.ActionPossible;
+            if (actionpossible.Length == 0)
+                return; // aucune action disponible = on quitte
+        }
+
         do
         {
             AfficherPotager(positionInitiale);
-            (actionpossible,selectedIndex) = AfficherAction(selectedIndex,positionInitiale);
+            (actionpossible, selectedIndex) = AfficherAction(selectedIndex, positionInitiale);
             key = Console.ReadKey(true).Key;
             switch (key)
             {
@@ -688,39 +737,41 @@ public class Potager
                     break;
             }
         } while (key != ConsoleKey.Enter);
+
         string[] Graine = [""];
-        switch(actionpossible[selectedIndex])
-            {
-                case "Planter":
-                    do
+        switch (actionpossible[selectedIndex])
+        {
+            case "Planter":
+                do
+                {
+                    AfficherPotager(positionInitiale);
+                    (Graine, selectedIndex) = AfficherInventaire(selectedIndex, positionInitiale);
+                    key = Console.ReadKey(true).Key;
+                    switch (key)
                     {
-                        AfficherPotager(positionInitiale);
-                        (Graine,selectedIndex) = AfficherInventaire(selectedIndex,positionInitiale);
-                        key = Console.ReadKey(true).Key;
-                        switch (key)
-                        {
-                            case ConsoleKey.UpArrow:
-                                selectedIndex = (selectedIndex == 0) ? Graine.Length - 1 : selectedIndex - 1;
-                                break;
-                            case ConsoleKey.DownArrow:
-                                selectedIndex = (selectedIndex + 1) % Graine.Length;
-                                break;
-                            case ConsoleKey.Enter:
-                                break;
-                        }
-                    } while (key != ConsoleKey.Enter);
-                    Planter(Graine[selectedIndex],positionInitiale);
-                    break;
-                case "Arroser":
-                    TrouverTerrain(positionInitiale).Arroser();
-                    break;
-                case "Deterrer":
-                    TrouverTerrain(positionInitiale).Deterrer();
-                    break;
-                case "Engrais":
-                    TrouverTerrain(positionInitiale).MettreEngrais();
-                    break;
-            }  
+                        case ConsoleKey.UpArrow:
+                            selectedIndex = (selectedIndex == 0) ? Graine.Length - 1 : selectedIndex - 1;
+                            break;
+                        case ConsoleKey.DownArrow:
+                            selectedIndex = (selectedIndex + 1) % Graine.Length;
+                            break;
+                        case ConsoleKey.Enter:
+                            break;
+                    }
+                } while (key != ConsoleKey.Enter);
+                Planter(Graine[selectedIndex], positionInitiale);
+                break;
+            case "Arroser":
+                terrain.Arroser();
+                break;
+            case "Deterrer":
+                terrain.Deterrer();
+                break;
+            case "Engrais":
+                terrain.MettreEngrais();
+                break;
+            default:
+                break;
+        }
     }
-}
-  
+} 

@@ -35,7 +35,7 @@ public abstract class Legume
     public void Grandir()
     {
         if (Croissance<TempsCroissance && Arrosé==true){
-            if (Engrais) {Croissance+=2;}
+            if (Engrais && Croissance+1<TempsCroissance) {Croissance+=2;}
             else {Croissance+=1;}
             UpdateEtat();
             Engrais=false;

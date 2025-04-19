@@ -12,9 +12,12 @@ public abstract class Terrain
     public override string ToString()
     {
         string message = "";
-        if (Legume==null){
+        if (Legume==null || Legume.Etat=="graine")
+        {
             message=Image;
-        } else {
+        } 
+        else 
+        {
             message=Legume.EtatImage();
         }
         return message;
