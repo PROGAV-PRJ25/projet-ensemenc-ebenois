@@ -3,275 +3,775 @@ using System.Security.Claims;
 
 public class Potager
 {
-    public int Numero {get; private set;}
-    public static int NumeroSuivant = 1;
-    public int[] Size {get; private set;}
-    public string[,] PotagerGrille;
-    public List<Legume> ListLegumes {get; private set;}
+    public int[] Size { get; private set; }
+    public List<Terrain> ListTerrains {get; private set;}
     public int Jour {get; private set;}
     public Climat? Climat { get; private set; }
     public Inventaire? Inventaire { get; private set; }
 
     public Potager(int[] size, string pays)
     {
-        Size = size;
-        PotagerGrille = new string[size[0],size[1]];
-        ListLegumes = new List<Legume>();
+        Size=size;
+        ListTerrains = new List<Terrain>();
         Jour = 0;
         Inventaire = new Inventaire();
-        Climat = CreateClimat(pays);
-        Initialiser();
-        Numero = NumeroSuivant;
-        NumeroSuivant++;
+        switch (pays)
+        {
+            case "France":
+                Climat = new France();
+                break;
+            case "Madagascar":
+                Climat = new Madagascar();
+                break;
+            case "Placinland":
+                Climat = new Placinland();
+                break;
+            default:
+                throw new ArgumentException("Climat non pris en charge");
+        }
+        GénérateurDeTerrain();
+        ChargerPotager();
     }
 
-    private Climat CreateClimat(string pays)
+    //Génération du terrain
+    //Génère la bordure du potager et lance SPirale()
+    private void GénérateurDeTerrain()
     {
-        return pays switch
+        Random rand = new Random();
+        int etendue;
+        //Initialisation avec des valeurs aléatoires aux bords
+        for (int x = 0; x < Size[0]; x++)
         {
-            "France" => new France(),
-            "Madagascar" => new Madagascar(),
-            "Placinland" => new Placinland(),
-        };
+            etendue = rand.Next(1, 3);
+            switch(rand.Next(0, 3)){
+                case 0:
+                    if (x+etendue<Size[0]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Terre([x+detendue, 0]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[0]-x;detendue++){
+                            ListTerrains.Add(new Terre([x+detendue, 0]));
+                        }
+                    }
+                    break;
+                case 1:
+                    if (x+etendue<Size[0]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Argile([x+detendue, 0]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[0]-x;detendue++){
+                            ListTerrains.Add(new Argile([x+detendue, 0]));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (x+etendue<Size[0]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Sable([x+detendue, 0]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[0]-x;detendue++){
+                            ListTerrains.Add(new Sable([x+detendue, 0]));
+                        }
+                    }
+                    break;
+            }
+            x+=etendue;
+        }
+        for (int y = 1; y < Size[1]; y++)
+        {
+            etendue = rand.Next(1, 3);
+            switch(rand.Next(0, 3)){
+                case 0:
+                    if (y+etendue<Size[1]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Terre([0,y+detendue]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[1]-y;detendue++){
+                            ListTerrains.Add(new Terre([0,y+detendue]));
+                        }
+                    }
+                    break;
+                case 1:
+                    if (y+etendue<Size[1]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Argile([0,y+detendue]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[1]-y;detendue++){
+                            ListTerrains.Add(new Argile([0,y+detendue]));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (y+etendue<Size[1]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Sable([0,y+detendue]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[1]-y;detendue++){
+                            ListTerrains.Add(new Sable([0,y+detendue]));
+                        }
+                    }
+                    break;
+            }
+            y+=etendue;
+        }
+        for (int y = 1; y < Size[1]; y++)
+        {
+            etendue = rand.Next(1, 3);
+            switch(rand.Next(0, 3)){
+                case 0:
+                    if (y+etendue<Size[1]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Terre([Size[0]-1,y+detendue]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[1]-y;detendue++){
+                            ListTerrains.Add(new Terre([Size[0]-1,y+detendue]));
+                        }
+                    }
+                    break;
+                case 1:
+                    if (y+etendue<Size[1]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Argile([Size[0]-1,y+detendue]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[1]-y;detendue++){
+                            ListTerrains.Add(new Argile([Size[0]-1,y+detendue]));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (y+etendue<Size[1]) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Sable([Size[0]-1,y+detendue]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[1]-y;detendue++){
+                            ListTerrains.Add(new Sable([Size[0]-1,y+detendue]));
+                        }
+                    }
+                    break;
+            }
+            y+=etendue;
+        }
+        for (int x = 1; x < Size[0]-1; x++)
+        {
+            etendue = rand.Next(1, 3);
+            switch(rand.Next(0, 3)){
+                case 0:
+                    if (x+etendue<Size[0]-1) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Terre([x+detendue, Size[1]-1]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[0]-x-1;detendue++){
+                            ListTerrains.Add(new Terre([x+detendue, Size[1]-1]));
+                        }
+                    }
+                    break;
+                case 1:
+                    if (x+etendue<Size[0]-1) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Argile([x+detendue, Size[1]-1]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[0]-x-1;detendue++){
+                            ListTerrains.Add(new Argile([x+detendue, Size[1]-1]));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (x+etendue<Size[0]-1) {
+                        for (int detendue = 0; detendue<=etendue;detendue++){
+                            ListTerrains.Add(new Sable([x+detendue, Size[1]-1]));
+                        }
+                    }
+                    else {
+                        for (int detendue = 0; detendue<Size[0]-x-1;detendue++){
+                            ListTerrains.Add(new Sable([x+detendue, Size[1]-1]));
+                        }
+                    }
+                    break;
+            }
+            x+=etendue;
+        }
+        // Étape 2 : remplissage progressif en moyenne avec les voisins
+        Spirale();
     }
 
-    //crée un potager vide
-    public void Initialiser()
-    {
-        for (int i = 0; i<Size[0]; i++)
+    //Selectionne chaque terrain en suivant une forme de spirale et lance BruitGeneration()
+    public void Spirale()
+    { 
+
+        int top = 1;
+        int bottom = (Size[1]-1) - 1;
+        int left = 1;
+        int right = (Size[0]-1) - 1;
+
+        while (top <= bottom && left <= right)
         {
-            for (int j = 0; j<Size[1]; j++)
+            // Remplir la rangée du haut
+            for (int x = left; x <= right; x++)
+                BruitGeneration(x,top);
+            top++;
+            // Remplir la colonne de droite
+            for (int y = top; y <= bottom; y++)
+                BruitGeneration(right,y);
+            right--;
+            // Remplir la rangée du bas
+            if (top <= bottom)
             {
-                PotagerGrille[i,j]="";
+                for (int x = right; x >= left; x--)
+                    BruitGeneration(x,bottom);
+                bottom--;
+            }
+            // Remplir la colonne de gauche
+            if (left <= right)
+            {
+                for (int y = bottom; y >= top; y--)
+                    BruitGeneration(left,y);
+                left++;
             }
         }
     }
 
-    //Affiche un récapitulatif de divers informations
-    public void AfficherRecapitulatif()
+    //Génère un terrain en fonction de Voisin() et d'un bruit
+    public void BruitGeneration(int x, int y)
     {
-        int size = 100;
-        string titre = $"RECAPITULATIF - JOUR {Jour+1}";
-
-        AfficherBordure(titre, size);
-
-        //Informations sur la météo
-        Climat?.Actualisation(Jour);
-        AfficherInfo(Climat.ToString(), size, titre.Length);
-
-        //Informations sur les légumes
-        AfficherLegumes("Légumes", size, titre.Length);
-
-        //Informations sur l'inventaire
-        AfficherLegumes("Inventaire", size, titre.Length);
-
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.Write("▙");
-        for (int i = 0; i < size + titre.Length; i++) Console.Write("▄");
-        Console.Write("▟\n");
+        Random rand = new Random();
+        (int count, float sum) = Voisin(x,y);
+        // Moyenne avec un bruit
+        double average = (double)sum / count;
+        // Ajout d'un décalage aléatoire
+        double noise = rand.NextDouble() * 0.6 - 0.3; // bruit entre -0.3 et 0.3
+        double finalValue = average + noise;
+        // Clamp et arrondi à 0, 1 ou 2
+        int value = (int)Math.Round(finalValue);
+        value = Math.Max(0, Math.Min(2, value));
+        switch(value){
+            case 0:
+                ListTerrains.Add(new Terre([x, y]));
+                break;
+            case 1:
+                ListTerrains.Add(new Argile([x, y]));
+                break;
+            case 2:
+                ListTerrains.Add(new Sable([x, y]));
+                break;
+        }
     }
 
-    private void AfficherBordure(string titre, int size)
+    //Regarde les terrains de ses voisins
+    public (int,float) Voisin(int x,int y)
     {
+        float sum = 0;
+        int count = 0;
+        // voisin du haut
+        if (TrouverTerrain([x, y-1])!= null)
+        {
+            switch(TrouverTerrain([x, y-1]).Type)
+            {
+                case "Terre":
+                    sum += 0;
+                    break;
+                case "Argile":
+                    sum += 1;
+                    break;
+                case "Sable":
+                    sum += 2;
+                    break;
+            }
+            count++;
+        }
+        // voisin gauche
+        if (x > 0)
+        {
+            if (TrouverTerrain([x-1, y])!= null)
+            {
+                switch(TrouverTerrain([x-1, y]).Type)
+                {
+                    case "Terre":
+                        sum += 0;
+                        break;
+                    case "Argile":
+                        sum += 1;
+                        break;
+                    case "Sable":
+                        sum += 2;
+                        break;
+                }
+                count++;
+            }
+        }
+        // voisin droite
+        if (x < Size[0] - 1)
+        {
+            if (TrouverTerrain([x+1, y])!= null)
+            {
+                switch(TrouverTerrain([x+1, y]).Type)
+                {
+                    case "Terre":
+                        sum += 0;
+                        break;
+                    case "Argile":
+                        sum += 1;
+                        break;
+                    case "Sable":
+                        sum += 2;
+                        break;
+                }
+                count++;
+            }
+        }
+        // voisin bas
+        if (y < Size[1] - 1)
+        {
+            if (TrouverTerrain([x, y+1])!= null)
+            {
+                switch(TrouverTerrain([x, y+1]).Type)
+                {
+                    case "Terre":
+                        sum += 0;
+                        break;
+                    case "Argile":
+                        sum += 1;
+                        break;
+                    case "Sable":
+                        sum += 2;
+                        break;
+                }
+                count++;
+            }
+        }
+        return (count,sum);
+    }
+    //
+
+    //lance la simulation
+    private void ChargerPotager()
+    {
+        while (true)
+        {
+            Inventaire?.Ajouter("Patate", 1);
+            Inventaire?.Ajouter("Champignon", 1);
+            NouveauJour();
+        }
+    }
+
+    //Affiche seuleument le potager en fonction de la selection du joueur
+    public void AfficherPotager(int[] selectedIndex)
+    {
+        Console.Clear();
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Votre Potager:");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write("o");
+            for (int x = 0; x < Size[0]; x++){Console.Write("--");}
+            Console.Write("-o\n");
+            for (int y = 0; y < Size[1]; y++)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write("¦");
+                for (int x = 0; x < Size[0]; x++)
+                {
+                    if (x==selectedIndex[0] && y==selectedIndex[1])
+                    {
+                        // Met en surbrillance l'élément sélectionné
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.Write(TrouverTerrain([x,y]).ToString());
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.Write(TrouverTerrain([x,y]).ToString());
+                    }
+                }
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write(" ¦");
+                AfficherLegume(selectedIndex, y);
+            }
+            Console.Write("o");
+            for (int x = 0; x < Size[0]; x++){
+                Console.Write("--");
+            }
+            Console.WriteLine("-o\n");
+    }
+
+    //Affiche le calpin
+    public void AfficherCalpinBordureHaut(int Size, string titre)
+    {
+        //Bordure
         Console.ForegroundColor = ConsoleColor.DarkCyan;
         Console.Write("▛");
-        for (int i = 0; i<size/2; i++) {Console.Write("▀");}
+        for (int i = 0; i<Size/2; i++) {Console.Write("▀");}
         Console.BackgroundColor = ConsoleColor.White;
         Console.Write(titre);
         Console.ResetColor();
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int i = 0; i<size/2; i++) {Console.Write("▀");}
-        Console.Write("▜\n▌");
+        for (int i = 0; i<Size/2; i++) {Console.Write("▀");}
+        Console.Write("▜\n");
     }
-
-    //Informations sur la météo
-    private void AfficherInfo(string value, int size, int titreLength)
-    {
-        Console.ForegroundColor = ConsoleColor.White;
-        int padding = (size+titreLength-(value.Length))/2;
-        for (int i = 0; i<padding; i++) {Console.Write(" ");}
-        Console.Write(value);
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        if (2*padding+value.Length!=size+titreLength){
-            for (int i = 0; i<padding; i++) {Console.Write(" ");}
-        } else {
-            for (int i = 0; i<padding-1; i++) {Console.Write(" ");}
-        }
-        Console.Write("▐\n");
-    }
-
-    //Informatons sur les légumes
-    private void AfficherLegumes(string label, int size, int titreLength)
+    public void AfficherCalpinBordureBas(int Size, string titre)
     {
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.Write("▌");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write(label + ":");
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int i = 0; i < size + titreLength - label.Length - 1; i++) {Console.Write(" ");}
-        Console.Write("▐\n");
-
-        foreach (Legume legume in ListLegumes)
-        {
-            if (legume.Graine!=0 && label=="Inventaire")
-            {
-                Console.Write("▌");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(legume);
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                for (int i = 0; i < size + titreLength - legume.ToString()?.Length; i++) {Console.Write(" ");}
-                Console.Write("▐\n");
-            }
-            if (legume.Graine==0 && label=="Légumes")
-            {
-                Console.Write("▌");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(legume);
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                for (int i = 0; i < size + titreLength - legume.ToString()?.Length; i++) {Console.Write(" ");}
-                Console.Write("▐\n");
-            }
-        }
-
-        Console.Write("▌");
-        for (int i = 0; i < size + titreLength; i++) {Console.Write(" ");}
-        Console.Write("▐\n");
+        Console.Write("▙");
+        for (int i = 0; i < Size + titre.Length; i++) Console.Write("▄");
+        Console.Write("▟\n");
     }
 
-    //Ajouter dans l'inventaire un légume
-    public void Ajouter(string nom,int nombre)
-    {
-        bool aGraine = false;
-        foreach (Legume legume in ListLegumes)
-        {
-            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
-        }
-        if (aGraine)
-        {
-            foreach (Legume legume in ListLegumes)
-                {
-                    if(legume.Nom==nom && legume.Graine!=0) {legume.Graine+=nombre;}
-                }
-        }
-        else 
-        {
-            switch (nom)
-                {
-                    case "Patate":
-                        ListLegumes.Add(new Patate(0,0,nombre));
-                        break;
-                    case "Champignon":
-                        ListLegumes.Add(new Champignon(0,0,nombre));
-                        break;
-                }
-            }
-    }
-
-    //Plante un légume
-    public void Planter(string nom,int x,int y)
-    {
-        bool estPlanté = false;
-        bool emplacementLibre = true;
-        bool aGraine = false;
-        foreach (Legume legume in ListLegumes)
-        {
-            if(legume.Nom==nom && legume.Graine!=0) {aGraine=true;}
-        }
-        if (aGraine)
-        {
-            foreach (Legume legume in ListLegumes)
-            {
-                if(legume.Nom==nom && x==legume.X && y==legume.Y && legume.Graine==0) {emplacementLibre=false;}
-            }
-            if (emplacementLibre)
-            {
-                foreach (Legume legume in ListLegumes)
-                {
-                    if(legume.Nom==nom && legume.Graine!=0) 
-                    {
-                        switch (nom)
-                        {
-                            case "Patate":
-                                if (legume.Graine==1) {ListLegumes.Remove(legume);}
-                                else {legume.Graine-=1;}
-                                ListLegumes.Add(new Patate(x,y,0));
-                                estPlanté=true;
-                                break;
-                            case "Champignon":
-                                if (legume.Graine==1) {ListLegumes.Remove(legume);}
-                                else {legume.Graine-=1;}
-                                ListLegumes.Add(new Champignon(x,y,0));
-                                estPlanté=true;
-                                break;
-                        }
-                    }
-                    if (estPlanté) {break;}
-                }
-            }
-        }
-    }
-
-    //Passe à la journée suivante
+    //Passe à un nouveau jour
     public void NouveauJour()
     {
+        foreach (Terrain terrain in ListTerrains){
+            terrain.Legume?.Grandir();
+        }
+        int[] selectedIndex;
+        do
+        {
+            selectedIndex = PotagerEtMeteo([0,0]);
+            if (selectedIndex[1]==Size[1]) {break;}
+            else {PotagerEtAction(selectedIndex);}
+        } while (true);
         Jour+=1;
-        foreach (Legume legume in ListLegumes)
-        {
-            if (legume.Graine==0) {legume.Grandir(0);}
-        }
     }
 
-    //Affiche le potager
-    public void AfficherPotager()
+    //Affiche la meteo
+    public int[] AfficherMeteoEtRetour(int[] selectedIndex)
     {
+        Climat?.Actualisation(Jour);
+        int size = 100;
+        string titre = $"METEO - JOUR {Jour+1}";
+        int paddingMeteo = (size+titre.Length-(Climat.ToString().Length))/2;
+        int paddingBouton = (size+titre.Length-"[ Nouvelle journée ]".Length)/2;
+        //Bordure
+        AfficherCalpinBordureHaut(size,titre);
+        Console.Write("▌");
         Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("Votre Potager:");
-        bool emplacementVide = true;
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        string message = "o";
-        for (int x = 0; x < Size[0]; x++){
-            message+="--";
-            }
-        message += "-o\n";
+        for (int i = 0; i<paddingMeteo; i++) {Console.Write(" ");}
+        Console.Write(Climat.ToString());
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        if (2*paddingMeteo+Climat.ToString().Length!=size+titre.Length){
+            for (int i = 0; i<paddingMeteo; i++) {Console.Write(" ");}
+        } else {
+            for (int i = 0; i<paddingMeteo-1; i++) {Console.Write(" ");}
+        }
+        Console.Write("▐\n▌");
+        for (int i = 0; i<size+titre.Length; i++) {Console.Write(" ");}
+        Console.Write("▐\n▌");
 
-        for (int y = 0; y < Size[1]; y++)
+        for (int i = 0; i<paddingBouton; i++) {Console.Write(" ");}
+        if (selectedIndex[1]==Size[1])
         {
-            message += "¦";
-            for (int x = 0; x < Size[0]; x++)
+            // Met en surbrillance l'élément sélectionné
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("[ Nouvelle journée ]");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("[ Nouvelle journée ]");
+        }
+        for (int i = 0; i<paddingBouton; i++) {Console.Write(" ");}
+        Console.ForegroundColor = ConsoleColor.DarkCyan;    
+        Console.Write("▐\n");
+
+        AfficherCalpinBordureBas(size,titre);
+        return(selectedIndex);
+    }
+
+    //Trouve le terrain aus coordonées
+    public Terrain TrouverTerrain(int[] position)
+    {
+        foreach (Terrain terrain in ListTerrains)
+        {
+            if (terrain.Coordonnées[0]==position[0] && terrain.Coordonnées[1]==position[1])
             {
-                emplacementVide = true;
-                foreach (Legume legume in ListLegumes)
-                {
-                    if (legume.X==x && legume.Y==y && legume.Graine==0)
-                    {
-                        message+=legume.EtatImage();
-                        emplacementVide=false;
-                    }
-                }
-                if (emplacementVide)
-                {
-                    message+="🟫";
+                return(terrain);
+            }
+        }
+        return(null);
+    }
+
+    //Affiche un récapitulatif de divers informations
+    //Affiche les actions possibles
+    public (string[] actionpossible, int selectedIndex) AfficherAction(int positionInitialeIndex, int[] positionInitialePotager)
+    {
+        int Size = 50;
+        string titre = $"ACTION - JOUR {Jour + 1}";
+        int selectedIndex = positionInitialeIndex;
+
+        AfficherCalpinBordureHaut(Size, titre);
+
+        string[] actionPossible = [];
+
+        var terrain = TrouverTerrain(positionInitialePotager);
+
+        if (terrain?.Legume == null && Inventaire.ListLegumes.Any())
+        {
+            actionPossible = ["Planter"];
+        }
+        else if (terrain?.Legume != null)
+        {
+            actionPossible = terrain.Legume.ActionPossible;
+        }
+
+        for (int i = 0; i < actionPossible.Length; i++)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write("▌");
+
+            if (i == selectedIndex)
+            {
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.Write($"[ {actionPossible[i]} ]");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"[ {actionPossible[i]} ]");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            for (int j = 0; j < Size + titre.Length - ($"[ {actionPossible[i]} ]".Length); j++)
+            {
+                Console.Write(" ");
+            }
+
+            Console.Write("▐\n");
+        }
+
+        AfficherCalpinBordureBas(Size, titre);
+        return (actionPossible, selectedIndex);
+    }
+
+
+    public (string[] Graine,int selectedIndex) AfficherInventaire(int positionInitialeIndex, int[] positionInitialePotager)
+    {
+        int Size = 50;
+        string titre = $"INVENTAIRE - JOUR {Jour+1}";
+        int selectedIndex = positionInitialeIndex;
+        //Bordure
+        AfficherCalpinBordureHaut(Size,titre);
+        string[] listGraine = new string[Inventaire.ListLegumes.Count()];
+
+        int legumeNumero=0;
+        foreach (Legume legume in Inventaire.ListLegumes)
+        {
+            listGraine[legumeNumero]=legume.Nom;
+            legumeNumero++;
+        }
+
+        for (int i = 0; i < listGraine.Length; i++)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write("▌");
+            if (i==selectedIndex)
+            {
+                // Met en surbrillance l'élément sélectionné
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.Write($"[ {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine} ]");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"[ {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine} ]");
+            }
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        for (int j = 0; j < Size + titre.Length - ($"[ {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine} ]".Length); j++) {Console.Write(" ");}
+        Console.Write("▐\n");
+        }
+        AfficherCalpinBordureBas(Size,titre);
+        return(listGraine, selectedIndex);
+    }
+    
+    //Plante un légume
+    public void Planter(string nom,int[] position)
+    {
+        if (Inventaire.TrouverLegume(nom).Graine!=0 && TrouverTerrain(position)!=null && TrouverTerrain(position).EmplacementLibre())
+            {
+            switch (nom)
+            {
+                case "Patate":
+                    if (Inventaire.TrouverLegume(nom).Graine==1) {Inventaire.RetirerLegume(Inventaire.TrouverLegume(nom));}
+                    else {Inventaire.TrouverLegume(nom).Graine-=1;}
+                    TrouverTerrain(position).Planter(nom);
+                    break;
+                case "Champignon":
+                    if (Inventaire.TrouverLegume(nom).Graine==1) {Inventaire.RetirerLegume(Inventaire.TrouverLegume(nom));}
+                    else {Inventaire.TrouverLegume(nom).Graine-=1;}
+                    TrouverTerrain(position).Planter(nom);
+                    break;
+            }
+        }
+    }
+
+    //Affiche le légume séléctionné
+    public void AfficherLegume(int[] selectedIndex, int ligne)
+    {
+        if (ligne == 0)
+        {
+            foreach (Terrain terrain in ListTerrains)
+            {
+                if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write($" ▪ Type: {terrain.Legume.Nom} {terrain.Legume.Image[0]}");
                 }
             }
-            message+=" ¦\n";
         }
-
-        message+="o";
-        for (int x = 0; x < Size[0]; x++){
-            message+="--";
+        if (ligne == 1)
+        {
+            foreach (Terrain terrain in ListTerrains)
+            {
+                if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write($" ▪ Croissance: {terrain.Legume.Croissance*100/terrain.Legume.TempsCroissance}%");
+                }
+            }
         }
-        message+="-o\n";
-        Console.WriteLine(message);
+        if (ligne == 2)
+        {
+            foreach (Terrain terrain in ListTerrains)
+            {
+                if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write($" ▪ Etat: {terrain.Legume.Etat}");
+                }
+            }
+        }
+        Console.Write("\n");
     }
 
-    //Affiche le potager et le récapitulatif
-    public override string ToString()
+    //Affiche le potager et la météo
+    public int[] PotagerEtMeteo(int[] positionInitiale)
     {
-        Console.Clear();
-        AfficherPotager();
-        AfficherRecapitulatif();
-        Console.ForegroundColor=ConsoleColor.White;
-        Console.WriteLine("Utilise les flèches ↑ ↓ pour naviguer, Entrée pour sélectionner :\n");
-        return "";
+        ConsoleKey key;
+        int[] selectedIndex = positionInitiale;
+        do
+        {
+            AfficherPotager(selectedIndex);
+            AfficherMeteoEtRetour(selectedIndex);
+            key = Console.ReadKey(true).Key;
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    selectedIndex[1] = (selectedIndex[1] == 0) ? Size[1] : selectedIndex[1] - 1;
+                    break;
+                case ConsoleKey.DownArrow:
+                    selectedIndex[1] = (selectedIndex[1] + 1) % (Size[1]+1) ;
+                    break;
+                case ConsoleKey.LeftArrow:
+                    selectedIndex[0] = (selectedIndex[0] == 0) ? Size[0] - 1 : selectedIndex[0] - 1;
+                    break;
+                case ConsoleKey.RightArrow:
+                    selectedIndex[0] = (selectedIndex[0] + 1) % Size[0];
+                    break;
+                case ConsoleKey.Enter:
+                    break;
+            }
+        } while (key != ConsoleKey.Enter);
+        return (selectedIndex);
+        }
+
+    //Affiche le potager et les actions possibles
+    public void PotagerEtAction(int[] positionInitiale)
+    {
+        ConsoleKey key;
+        int selectedIndex = 0;
+
+        var terrain = TrouverTerrain(positionInitiale);
+        if (terrain == null) return;
+
+        string[] actionpossible;
+
+        if (terrain.Legume == null)
+        {
+            if (Inventaire.ListLegumes.Count() == 0)
+                return; // pas de graine = rien à afficher
+            else
+                actionpossible = ["Planter"];
+        }
+        else
+        {
+            actionpossible = terrain.Legume.ActionPossible;
+            if (actionpossible.Length == 0)
+                return; // aucune action disponible = on quitte
+        }
+
+        do
+        {
+            AfficherPotager(positionInitiale);
+            (actionpossible, selectedIndex) = AfficherAction(selectedIndex, positionInitiale);
+            key = Console.ReadKey(true).Key;
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    selectedIndex = (selectedIndex == 0) ? actionpossible.Length - 1 : selectedIndex - 1;
+                    break;
+                case ConsoleKey.DownArrow:
+                    selectedIndex = (selectedIndex + 1) % actionpossible.Length;
+                    break;
+                case ConsoleKey.Enter:
+                    break;
+            }
+        } while (key != ConsoleKey.Enter);
+
+        string[] Graine = [""];
+        switch (actionpossible[selectedIndex])
+        {
+            case "Planter":
+                do
+                {
+                    AfficherPotager(positionInitiale);
+                    (Graine, selectedIndex) = AfficherInventaire(selectedIndex, positionInitiale);
+                    key = Console.ReadKey(true).Key;
+                    switch (key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            selectedIndex = (selectedIndex == 0) ? Graine.Length - 1 : selectedIndex - 1;
+                            break;
+                        case ConsoleKey.DownArrow:
+                            selectedIndex = (selectedIndex + 1) % Graine.Length;
+                            break;
+                        case ConsoleKey.Enter:
+                            break;
+                    }
+                } while (key != ConsoleKey.Enter);
+                Planter(Graine[selectedIndex], positionInitiale);
+                break;
+            case "Arroser":
+                terrain.Arroser();
+                break;
+            case "Deterrer":
+                terrain.Deterrer();
+                break;
+            case "Engrais":
+                terrain.MettreEngrais();
+                break;
+            default:
+                break;
+        }
     }
-}
+} 

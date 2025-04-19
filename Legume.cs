@@ -1,20 +1,20 @@
 public abstract class Legume
 {
+    public abstract string[] ActionPossible { get;}
     public abstract string[] Image { get;}
     public abstract string Nom { get;}
     public abstract int TempsCroissance { get;}
-    public int X {get; protected set;}
-    public int Y {get; protected set;}
     public int Croissance {get; private set;}
     public string? Etat {get; private set;}
+    public bool Arrosé {get; private set;}
+    public bool Engrais {get; private set;}
     public int Graine;
-    public Legume(int x,int y, int nombre)
+    public Legume(int nombre)
     {
-        X=x;
-        Y=y;
         Croissance=0;
         Graine=nombre;
         UpdateEtat();
+        Arrosé = false;
     }
     public void UpdateEtat()
     {
@@ -32,20 +32,26 @@ public abstract class Legume
         }
     }
     public virtual string EtatImage() {return "";}
-    public void Grandir(int engrais)
+    public void Grandir()
     {
-        if (Croissance<TempsCroissance){
-            Croissance+=1+engrais;
+        if (Croissance<TempsCroissance && Arrosé==true){
+            if (Engrais && Croissance+1<TempsCroissance) {Croissance+=2;}
+            else {Croissance+=1;}
             UpdateEtat();
+            Engrais=false;
+            Arrosé=false;
         }
     }
-    public override string ToString()
+
+    public void Arroser()
     {
-        string message = "";
-        if (Graine==0) {message = $" ▪ Coordonnées: ({X},{Y}) - Type: {Nom} {Image[0]} - Croissance: {Croissance*100/TempsCroissance} % - Etat: {Etat}";}
-        else {message = $" ▪ Type: {Nom} {Image[0]} - Nombre de graines: {Graine}";}
-        return message;
+        Arrosé = true;
     }
+    public void MettreEngrais()
+    {
+        Engrais = true;
+    }
+
     /*public string Image()
     {
         string image="";
