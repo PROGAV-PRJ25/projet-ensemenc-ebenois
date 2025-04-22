@@ -362,7 +362,7 @@ public class Potager
     //
 
     //lance la simulation
-    private void ChargerPotager()
+    public void ChargerPotager()
     {
         bool continuer = true; 
         while (continuer)

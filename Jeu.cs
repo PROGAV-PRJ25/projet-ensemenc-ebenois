@@ -19,6 +19,10 @@ public class Jeu{
                             break;
                     }
                     break;
+                case 1:
+                    int numéroPartie = ChargerSauvegarde();
+                    if (numéroPartie!=Sauvegardes.Count()) {Sauvegardes[numéroPartie].ChargerPotager();}
+                    break;
                 case 3:
                     Credit();
                     break;
@@ -114,7 +118,60 @@ public class Jeu{
             }
         } while (key != ConsoleKey.Enter);
         return (selectedIndex);
-        }
+    }
+
+    public int ChargerSauvegarde(){
+        ConsoleKey key;
+        int selectedIndex = 0;
+        do
+        {
+            Console.Clear();
+            AfficherTitle();
+            Console.WriteLine("────────────────────────────────────────────────────────────────────────");
+            Console.WriteLine("Utilisez les flèches ↑ ↓ pour naviguer, Entrée pour sélectionner :\n");
+            for (int i = 0; i < Sauvegardes.Count(); i++)
+            {
+                if (i == selectedIndex)
+                {
+                    // Met en surbrillance l'élément sélectionné
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.WriteLine(Sauvegardes[i].Climat);
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine(Sauvegardes[i].Climat);
+                }
+            }
+            if (selectedIndex == Sauvegardes.Count())
+                {
+                    // Met en surbrillance l'élément sélectionné
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.WriteLine("[ Quitter ]");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine("[ Quitter ]");
+                }
+            Console.WriteLine("────────────────────────────────────────────────────────────────────────");
+            key = Console.ReadKey(true).Key;
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    selectedIndex = (selectedIndex == 0) ? Sauvegardes.Count()+1 - 1 : selectedIndex - 1;
+                    break;
+                case ConsoleKey.DownArrow:
+                    selectedIndex = (selectedIndex + 1) % (Sauvegardes.Count()+1);
+                    break;
+                case ConsoleKey.Enter:
+                    break;
+            }
+        } while (key != ConsoleKey.Enter);
+        return(selectedIndex);
+    }
 
     public int[] DemanderTaillePotager(){
         int[] size = [0,0];
@@ -162,13 +219,14 @@ public class Jeu{
 
     public void Credit(){
         Console.Clear();
+        Console.WriteLine("────────────────────────────────────────────────────────────────────────");
         Console.WriteLine(@"🖋️ Crédits – Le simulateur de potager ultime 🌱
 Développement & Programmation
-👨‍💻 Elian BENOIS & Mathis GARNIER
+👨‍💻 Elian BENOIS
 💻 Moteur de menus fluide comme une rivière d’irrigation
 
 Game Design
-🌾 Elian BENOIS & Mathis GARNIER
+🌾 Elian BENOIS
 💡 Idées fertiles comme un compost bien mûr
 
 Graphismes & Interface
@@ -176,17 +234,17 @@ Graphismes & Interface
 🧑‍🎨 UI aux petits oignons (bio, bien sûr)
 
 Scénario & Lore du Potager
-📚 Mathis GARNIER
+📚 Elian BENOIS
 🧙 Histoires de légumes enchantés et terres fertiles oubliées
 
 Tests & QA (Qualité des Asperges)
-🐛 Elian BENOIS & Mathis GARNIER
+🐛 Elian BENOIS
 🧪 A détecté plus de bugs que de doryphores en saison
 
 Remerciements Spéciaux
 🥕 À nos grand-parents pour les méthodes de culture
-🍄 À Placin, pour son amour des champignons
-🌍 À la planète, pour continuer de nous nourrir
+🍄 À M. PLACIN, pour son amour des champignons
+🚷 À Mathis GARNIER, parti trop tôt
 💚 À toi, joueur·se, pour faire pousser la vie pixel par pixel
 
 ───────────────────────────────────────────────────────────────
