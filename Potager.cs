@@ -462,26 +462,19 @@ public class Potager
         bool nouveauJour = false;
         do{
             selectedIndex = PotagerEtMeteo([0,0]);
-            switch (selectedIndex[1])
+            if (selectedIndex[1]==Size[1])
             {
-                case 3:
-                    nouveauJour=true;
-                    PasserJournée();
-                    break;
-                case 4:
-                    AfficherInventaire(selectedIndex);
-                    break;
-                case 5:
-                    AfficherMagasin(selectedIndex);
-                    break;
-                case 6:
-                    nouveauJour=true;
-                    continuer = false;
-                    break;
-                default:
-                    PotagerEtAction(selectedIndex);
-                    break;
+                nouveauJour=true;
+                PasserJournée();
             }
+            else if (selectedIndex[1]==Size[1]+1) {AfficherInventaire(selectedIndex);}
+            else if (selectedIndex[1]==Size[1]+2) {AfficherMagasin(selectedIndex);}
+            else if (selectedIndex[1]==Size[1]+3)
+            {
+                nouveauJour=true;
+                continuer = false;
+            }
+            else {PotagerEtAction(selectedIndex);}
         } while (!nouveauJour);
         return (continuer);
     }
@@ -727,12 +720,11 @@ public class Potager
         {
             AfficherPotager(selectedIndex);
             AfficherMeteoEtRetour(selectedIndex);
-            Console.WriteLine(selectedIndex[0]+" "+selectedIndex[1]);
             key = Console.ReadKey(true).Key;
             switch (key)
             {
                 case ConsoleKey.UpArrow:
-                    selectedIndex[1] = (selectedIndex[1] == 0) ? Size[1]+4 : selectedIndex[1] - 1;
+                    selectedIndex[1] = (selectedIndex[1] == 0) ? Size[1]+3 : selectedIndex[1] - 1;
                     break;
                 case ConsoleKey.DownArrow:
                     selectedIndex[1] = (selectedIndex[1] + 1) % (Size[1]+4) ;

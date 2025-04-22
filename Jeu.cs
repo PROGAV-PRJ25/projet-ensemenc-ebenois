@@ -7,7 +7,8 @@ public class Jeu{
             AfficherTitle();
             switch (AfficherMenu(["1. Nouvelle Partie 🌾","2. Charger une Partie 🧺","3. Options ⚙️","4. Crédits 🖋️","5. Quitter 🌙"])){
                 case 0:
-                    switch (AfficherMenu(["1. France FR","2. Madagascar MD","3. Placinland PL"])){
+                    switch (AfficherMenu(["1. France FR","2. Madagascar MD","3. Placinland PL","4. Retour"]))
+                    {
                         case 0:
                             CreerPotager(DemanderTaillePotager(),"France");
                             break;
@@ -16,6 +17,8 @@ public class Jeu{
                             break;
                         case 2:
                             CreerPotager(DemanderTaillePotager(),"Placinland");
+                            break;
+                        case 3:
                             break;
                     }
                     break;
@@ -136,12 +139,12 @@ public class Jeu{
                     // Met en surbrillance l'élément sélectionné
                     Console.ForegroundColor = ConsoleColor.Black;
                     Console.BackgroundColor = ConsoleColor.White;
-                    Console.WriteLine(Sauvegardes[i].Climat);
+                    Console.WriteLine($"{i+1}. {Sauvegardes[i].Climat}");
                     Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine(Sauvegardes[i].Climat);
+                    Console.WriteLine($"{i+1}. {Sauvegardes[i].Climat}");
                 }
             }
             if (selectedIndex == Sauvegardes.Count())
@@ -149,12 +152,12 @@ public class Jeu{
                     // Met en surbrillance l'élément sélectionné
                     Console.ForegroundColor = ConsoleColor.Black;
                     Console.BackgroundColor = ConsoleColor.White;
-                    Console.WriteLine("[ Quitter ]");
+                    Console.WriteLine($"{Sauvegardes.Count()+1}. Quitter");
                     Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine("[ Quitter ]");
+                    Console.WriteLine($"{Sauvegardes.Count()+1}. Quitter");
                 }
             Console.WriteLine("────────────────────────────────────────────────────────────────────────");
             key = Console.ReadKey(true).Key;
@@ -250,7 +253,7 @@ Remerciements Spéciaux
 ───────────────────────────────────────────────────────────────
          🌙 Merci d’avoir joué… et bon jardinage ! 🌿
 ───────────────────────────────────────────────────────────────
-Entrée pour quitter");
+Entrée pour quitter :");
 Console.ReadKey();
     }
  
