@@ -536,17 +536,17 @@ public class Potager
             {
                 Console.BackgroundColor = ConsoleColor.White;
                 Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($"[ {actionPossible[i]} ]");
+                Console.Write($"{i+1}. {actionPossible[i]}");
                 Console.ResetColor();
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.Write($"[ {actionPossible[i]} ]");
+                Console.Write($"{i+1}. {actionPossible[i]}");
             }
 
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            for (int j = 0; j < size + titre.Length - ($"[ {actionPossible[i]} ]".Length); j++)
+            for (int j = 0; j < size + titre.Length - ($"{i+1}. {actionPossible[i]}".Length); j++)
             {
                 Console.Write(" ");
             }
@@ -590,17 +590,17 @@ public class Potager
             {
                 Console.BackgroundColor = ConsoleColor.White;
                 Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($"[ {actionPossible[i]} ]");
+                Console.Write($"{i+1}. {actionPossible[i]}");
                 Console.ResetColor();
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.Write($"[ {actionPossible[i]} ]");
+                Console.Write($"{i+1}. {actionPossible[i]}");
             }
 
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            for (int j = 0; j < Size + titre.Length - ($"[ {actionPossible[i]} ]".Length); j++)
+            for (int j = 0; j < Size + titre.Length - ($"{i+1}. {actionPossible[i]}".Length); j++)
             {
                 Console.Write(" ");
             }
@@ -638,16 +638,16 @@ public class Potager
                 // Met en surbrillance l'élément sélectionné
                 Console.BackgroundColor = ConsoleColor.White;
                 Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($"[ {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine} ]");
+                Console.Write($"{i+1}. {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine}");
                 Console.ResetColor();
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.Write($"[ {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine} ]");
+                Console.Write($"{i+1}. {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine}");
             }
         Console.ForegroundColor = ConsoleColor.DarkCyan;
-        for (int j = 0; j < Size + titre.Length - ($"[ {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine} ]".Length); j++) {Console.Write(" ");}
+        for (int j = 0; j < Size + titre.Length - ($"{i+1}. {listGraine[i]} : {Inventaire.TrouverLegume(listGraine[i]).Graine}".Length); j++) {Console.Write(" ");}
         Console.Write("▐\n");
         }
         AfficherCalpinBordureBas(Size,titre);
@@ -680,6 +680,11 @@ public class Potager
     {
         if (ligne == 0)
         {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($" ▪ Type: {TrouverTerrain(selectedIndex).Type}");
+        }
+        if (ligne == 1)
+        {
             foreach (Terrain terrain in ListTerrains)
             {
                 if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
@@ -688,7 +693,7 @@ public class Potager
                 }
             }
         }
-        if (ligne == 1)
+        if (ligne == 2)
         {
             foreach (Terrain terrain in ListTerrains)
             {
@@ -698,7 +703,7 @@ public class Potager
                 }
             }
         }
-        if (ligne == 2)
+        if (ligne == 3)
         {
             foreach (Terrain terrain in ListTerrains)
             {
