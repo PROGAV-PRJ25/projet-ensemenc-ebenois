@@ -8,7 +8,9 @@ public abstract class Terrain
 
     public Terrain(int[] coordonnées){
         Coordonnées = coordonnées;
+        Legume = null;
     }
+
     public override string ToString()
     {
         string message = "";
@@ -20,7 +22,7 @@ public abstract class Terrain
         {
             message=Legume.EtatImage();
         }
-        return message;
+        return message.PadRight(2);
     }
 
     public void Planter(string legume)
