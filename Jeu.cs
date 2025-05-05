@@ -184,7 +184,7 @@ public class Jeu{
             AfficherTitle();
             Console.WriteLine("────────────────────────────────────────────────────────────────────────");
             if (size[0]==0){
-                Console.WriteLine("Entrez la largeur du potager :\n");
+                Console.WriteLine("Entrez la largeur du potager (supérieur à 5) :\n");
                 reponse = Console.ReadLine();
                 try
                 {
@@ -193,6 +193,11 @@ public class Jeu{
                         throw new Exception("Format incorrecte, un entier est demandé");
                     }
                     size[0] = Convert.ToInt32(reponse);
+                    if (size[0]<6)
+                    {
+                        size[0]=0;
+                        throw new Exception("Nombre superieur à 5");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -200,7 +205,7 @@ public class Jeu{
                     Thread.Sleep(2000);
                 }
             } else {
-                Console.WriteLine("Entrez la longueur du potager :\n");
+                Console.WriteLine("Entrez la longueur du potager (supérieur à 5) :\n");
                 reponse = Console.ReadLine();
                 try
                 {
@@ -209,6 +214,11 @@ public class Jeu{
                         throw new Exception("Format incorrecte, un entier est demandé");
                     }
                     size[1] = Convert.ToInt32(reponse);
+                    if (size[1]<6)
+                    {
+                        size[1]=0;
+                        throw new Exception("Nombre superieur à 5");
+                    }
                 }
                 catch (Exception e)
                 {

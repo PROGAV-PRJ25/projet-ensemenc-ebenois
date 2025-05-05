@@ -20,7 +20,7 @@ public abstract class Terrain
         } 
         else 
         {
-            message=Legume.EtatImage();
+            message=Legume.EtatImage()+" ";
         }
         return message.PadRight(2);
     }
@@ -60,6 +60,11 @@ public abstract class Terrain
     public void MettreEngrais()
     {
         Legume.MettreEngrais();
+    }
+
+    public void Recolter()
+    {
+        Legume=null;
     }
 
 

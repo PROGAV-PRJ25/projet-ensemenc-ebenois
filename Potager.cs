@@ -2,16 +2,18 @@ public class Potager
 {
     public int[] Size { get; private set; }
     public List<Terrain> ListTerrains {get; private set;}
-    public int Jour {get; private set;}
+    public int Semaine {get; private set;}
     public Climat? Climat { get; private set; }
     public Inventaire? Inventaire { get; private set; }
+    public Magasin? Magasin { get; private set; }
 
     public Potager(int[] size, string pays)
     {
         Size=size;
         ListTerrains = new List<Terrain>();
-        Jour = 0;
+        Semaine = 0;
         Inventaire = new Inventaire();
+        Magasin = new Magasin();
         switch (pays)
         {
             case "France":
@@ -367,9 +369,7 @@ public class Potager
         bool continuer = true; 
         while (continuer)
         {
-            Inventaire?.Ajouter("Patate", 1);
-            Inventaire?.Ajouter("Champignon", 1);
-            continuer = NouveauJour();
+            continuer = NouveauSemaine();
         }
     }
 
@@ -403,8 +403,13 @@ public class Potager
                 }
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write("¦");
-                AfficherLegume(selectedIndex, y);
+                if (selectedIndex[0]< Size[0] && selectedIndex[1]< Size[1]){
+                    AfficherLegume(selectedIndex, y);
+                } else {
+                    Console.Write("\n");
+                }
             }
+            Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write("o");
             for (int x = 0; x < Size[0]; x++){
                 Console.Write("---");
@@ -447,70 +452,179 @@ public class Potager
         return(null);
     }
 
-    public void PasserJournée(){
+    public void PasserSemainenée(){
         foreach (Terrain terrain in ListTerrains){
-            terrain.Legume?.Grandir();
+            terrain.Legume?.Grandir(terrain);
         }
-        Jour+=1;
+        Semaine+=1;
     }
 
-    //Passe à un nouveau jour
-    public bool NouveauJour()
+    //Passe à un nouveau Semaine
+    public bool NouveauSemaine()
     { 
         int[] selectedIndex;
+        int[] positionInitiale;
         bool continuer = true;
-        bool nouveauJour = false;
+        bool nouveauSemaine = false;
+        selectedIndex=[0,0];
         do{
-            selectedIndex = PotagerEtMeteo([0,0]);
+            selectedIndex = PotagerEtMeteo(selectedIndex);
             if (selectedIndex[1]==Size[1])
             {
-                nouveauJour=true;
-                PasserJournée();
+                nouveauSemaine=true;
+                PasserSemainenée();
             }
             else if (selectedIndex[1]==Size[1]+1) {AfficherInventaire(selectedIndex);}
-            else if (selectedIndex[1]==Size[1]+2) {AfficherMagasin(selectedIndex);}
+            else if (selectedIndex[1]==Size[1]+2) 
+            {
+                ConsoleKey key;
+                positionInitiale=selectedIndex;
+                selectedIndex=[0,0];
+                do
+                {
+                    selectedIndex=AfficherMagasin(selectedIndex,positionInitiale);
+                    key = Console.ReadKey(true).Key;
+                    switch (key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            selectedIndex[1] = (selectedIndex[1] == 0) ? Magasin.ListLegumes.Count()+1 - 1 : selectedIndex[1] - 1;
+                            break;
+                        case ConsoleKey.DownArrow:
+                            selectedIndex[1] = (selectedIndex[1] + 1) % (Magasin.ListLegumes.Count()+1);
+                            break;
+                        case ConsoleKey.Enter:
+                            break;
+                    }
+                } while (key != ConsoleKey.Enter);
+                if (selectedIndex[1] < Magasin.ListLegumes.Count() && Inventaire.Argent>=Magasin.ListLegumes[selectedIndex[1]].Prix)
+                {
+                    Inventaire.Argent-=Magasin.ListLegumes[selectedIndex[1]].Prix;
+                    Inventaire?.Ajouter(Magasin.ListLegumes[selectedIndex[1]].Nom, 1);
+                } 
+            }
             else if (selectedIndex[1]==Size[1]+3)
             {
-                nouveauJour=true;
+                nouveauSemaine=true;
                 continuer = false;
             }
             else {PotagerEtAction(selectedIndex);}
-        } while (!nouveauJour);
+        } while (!nouveauSemaine);
         return (continuer);
     }
 
     public void AfficherInventaire(int[] selectedIndex)
     {
         int size = 100;
-        string titre = $"INVENTAIRE - JOUR {Jour+1}";
+        string titre = $"INVENTAIRE - Semaine {Semaine+1}";
 
         AfficherPotager(selectedIndex);
+        //Bordure
         AfficherCalpinBordureHaut(size,titre);
+        for (int i = 0; i < Inventaire.ListLegumes.Count(); i++)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write("▌");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($" ▪ Légume: {Inventaire.ListLegumes[i].Nom}, Nombre de graine: {Inventaire.ListLegumes[i].Graine}");
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            for (int j = 0; j < size + titre.Length - ($" ▪ Légume: {Inventaire.ListLegumes[i].Nom}, Nombre de graine: {Inventaire.ListLegumes[i].Graine}".Length); j++)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("▐\n");
+        }
+        Console.Write("▌");
+        Console.BackgroundColor = ConsoleColor.White;
+        Console.ForegroundColor = ConsoleColor.Black;
+        Console.Write($"Quitter");
+        Console.ResetColor();
+        for (int j = 0; j < size + titre.Length - ($"Quitter".Length); j++)
+            {
+                Console.Write(" ");
+            }
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▐\n");
         AfficherCalpinBordureBas(size,titre);
-
         Console.ReadKey();
     }
 
-    public void AfficherMagasin(int[] selectedIndex)
+    public int[] AfficherMagasin(int[] selectedIndex,int[] positionInitiale)
     {
         int size = 100;
-        string titre = $"MAGASIN - JOUR {Jour+1}";
+        string titre = $"MAGASIN - Semaine {Semaine+1}";
 
-        AfficherPotager(selectedIndex);
+        AfficherPotager(positionInitiale);
+        //Bordure
         AfficherCalpinBordureHaut(size,titre);
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▌");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write($"Votre argent: {Inventaire.Argent}€");
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        for (int j = 0; j < size + titre.Length - ($"Votre argent: {Inventaire.Argent}€".Length); j++)
+        {
+            Console.Write(" ");
+        }
+        Console.Write("▐\n");
+        Console.Write("▌");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write($"Légumes disponibles:");
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        for (int j = 0; j < size + titre.Length - ($"Légumes disponibles:".Length); j++)
+        {
+            Console.Write(" ");
+        }
+        Console.Write("▐\n");
+        for (int i = 0; i < Magasin.ListLegumes.Count(); i++)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write("▌");
+            if(selectedIndex[1]==i)
+            {
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write($" ▪ Légume: {Magasin.ListLegumes[i].Nom}, Prix: {Magasin.ListLegumes[i].Prix}€");
+            } else {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($" ▪ Légume: {Magasin.ListLegumes[i].Nom}, Prix: {Magasin.ListLegumes[i].Prix}€");
+            }
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            for (int j = 0; j < size + titre.Length - ($" ▪ Légume: {Magasin.ListLegumes[i].Nom}, Prix: {Magasin.ListLegumes[i].Prix}€".Length); j++)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("▐\n");
+        }
+        Console.Write("▌");
+        if(selectedIndex[1]==2)
+            {
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write($"Quitter");
+            } else {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($"Quitter");
+            }
+        Console.ResetColor();
+        for (int j = 0; j < size + titre.Length - ($"Quitter".Length); j++)
+            {
+                Console.Write(" ");
+            }
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("▐\n");
         AfficherCalpinBordureBas(size,titre);
-
-        Console.ReadKey();
+        return selectedIndex;
     }
 
     //Affiche la meteo
     public int[] AfficherMeteoEtRetour(int[] selectedIndex)
     {
-        Climat?.Actualisation(Jour);
+        Climat?.Actualisation(Semaine);
         int size = 100;
-        string titre = $"METEO - JOUR {Jour+1}";
+        string titre = $"METEO - Semaine {Semaine+1}";
         int paddingMeteo = (size+titre.Length-(Climat.ToString().Length))/2;
-        string[] actionPossible = ["Nouvelle journée","Inventaire","Magasin","Quitter"];
+        string[] actionPossible = ["Nouvelle Semaine","Inventaire","Magasin","Quitter"];
         //Bordure
         AfficherCalpinBordureHaut(size,titre);
         Console.Write("▌");
@@ -563,7 +677,7 @@ public class Potager
     public (string[] actionpossible, int selectedIndex) AfficherAction(int positionInitialeIndex, int[] positionInitialePotager)
     {
         int Size = 50;
-        string titre = $"ACTION - JOUR {Jour + 1}";
+        string titre = $"ACTION - Semaine {Semaine + 1}";
         int selectedIndex = positionInitialeIndex;
 
         AfficherCalpinBordureHaut(Size, titre);
@@ -572,13 +686,18 @@ public class Potager
 
         var terrain = TrouverTerrain(positionInitialePotager);
 
-        if (terrain?.Legume == null && Inventaire.ListLegumes.Any())
+        if (terrain?.Legume == null)
         {
-            actionPossible = ["Planter"];
+            if (Inventaire.ListLegumes.Any())
+            {
+                actionPossible = ["Planter"];
+            } else {
+                actionPossible = ["Aucune Action"];
+            }
         }
         else if (terrain?.Legume != null)
         {
-            actionPossible = terrain.Legume.ActionPossible;
+            actionPossible = terrain.Legume.ActionPossible();
         }
 
         for (int i = 0; i < actionPossible.Length; i++)
@@ -616,7 +735,7 @@ public class Potager
     public (string[] Graine,int selectedIndex) AfficherGraine(int positionInitialeIndex, int[] positionInitialePotager)
     {
         int Size = 50;
-        string titre = $"INVENTAIRE - JOUR {Jour+1}";
+        string titre = $"INVENTAIRE - Semaine {Semaine+1}";
         int selectedIndex = positionInitialeIndex;
         //Bordure
         AfficherCalpinBordureHaut(Size,titre);
@@ -689,7 +808,7 @@ public class Potager
             {
                 if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write($" ▪ Type: {terrain.Legume.Nom} {terrain.Legume.Image[0]}");
+                    Console.Write($" ▪ Légume: {terrain.Legume.Nom} {terrain.Legume.Image[0]}");
                 }
             }
         }
@@ -710,6 +829,26 @@ public class Potager
                 if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Write($" ▪ Etat: {terrain.Legume.Etat}");
+                }
+            }
+        }
+        if (ligne == 4)
+        {
+            foreach (Terrain terrain in ListTerrains)
+            {
+                if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(" ▪ Arrosé: "+(terrain.Legume.Arrosé==true ? "oui":"non"));
+                }
+            }
+        }
+        if (ligne == 5)
+        {
+            foreach (Terrain terrain in ListTerrains)
+            {
+                if(selectedIndex[0]==terrain.Coordonnées[0] && selectedIndex[1]==terrain.Coordonnées[1] && terrain.Legume!=null){
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write(" ▪ Engrais: "+(terrain.Legume.Engrais==true ? "oui":"non"));
                 }
             }
         }
@@ -752,26 +891,21 @@ public class Potager
     {
         ConsoleKey key;
         int selectedIndex = 0;
-
-        var terrain = TrouverTerrain(positionInitiale);
-        if (terrain == null) return;
-
+        Terrain terrain = TrouverTerrain(positionInitiale);
         string[] actionpossible;
-
         if (terrain.Legume == null)
         {
             if (Inventaire.ListLegumes.Count() == 0)
-                return; // pas de graine = rien à afficher
+                actionpossible = ["Quitter"];
             else
                 actionpossible = ["Planter"];
         }
         else
         {
-            actionpossible = terrain.Legume.ActionPossible;
+            actionpossible = terrain.Legume.ActionPossible();
             if (actionpossible.Length == 0)
-                return; // aucune action disponible = on quitte
+                actionpossible = ["Quitter"];
         }
-
         do
         {
             AfficherPotager(positionInitiale);
@@ -821,6 +955,10 @@ public class Potager
                 break;
             case "Engrais":
                 terrain.MettreEngrais();
+                break;
+            case "Recolter":
+                terrain.Recolter();
+                Inventaire.Argent+=30;
                 break;
             default:
                 break;
