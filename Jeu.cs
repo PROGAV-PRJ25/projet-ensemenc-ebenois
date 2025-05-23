@@ -35,7 +35,9 @@ public class Jeu{
             }
         } while (!quitter);
     }
-    public void AfficherTitle(){
+    //Affiche le titre
+    public void AfficherTitle()
+    {
         Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.Write("███████╗███╗   ██╗███████╗");
         Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -81,7 +83,7 @@ public class Jeu{
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("                  🌱 Le simulateur de potager ultime 🌱                  \n");
     }
-
+    //Affiche le menu
     public int AfficherMenu(string[] menuItems){
         ConsoleKey key;
         int selectedIndex = 0;
@@ -122,7 +124,7 @@ public class Jeu{
         } while (key != ConsoleKey.Enter);
         return (selectedIndex);
     }
-
+    //Affiche et charge les sauvegardes
     public int ChargerSauvegarde(){
         ConsoleKey key;
         int selectedIndex = 0;
@@ -175,7 +177,7 @@ public class Jeu{
         } while (key != ConsoleKey.Enter);
         return(selectedIndex);
     }
-
+    //Demande la taille du potager et verifie les entrées de l'utilisateur
     public int[] DemanderTaillePotager(){
         int[] size = [0,0];
         string reponse = "";
@@ -229,7 +231,7 @@ public class Jeu{
         } while (size[0]==0 || size[1]==0);
         return (size);
         }
-
+    //Affiche les crédits
     public void Credit(){
         Console.Clear();
         Console.WriteLine("────────────────────────────────────────────────────────────────────────");
@@ -266,7 +268,7 @@ Remerciements Spéciaux
 Entrée pour quitter :");
 Console.ReadKey();
     }
- 
+    //Crée le potager
     public void CreerPotager(int[] size,string pays){
         Sauvegardes.Add(new Potager(size,pays));
     }

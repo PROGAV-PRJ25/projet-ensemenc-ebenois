@@ -8,15 +8,17 @@ public abstract class Climat
     public int MeteoActuelle { get; private set; }
     public bool Urgence { get; private set; }
     public int SaisonActuelle { get; private set; }
-    public Climat() {Urgence = false;}
+    public Climat() { Urgence = false; }
+    //Actualise la saison en fonction de la date
     public void Actualisation(int date)
     {
         SaisonActuelle = (date / SaisonDuree) % 4;
 
     }
+    //Actualise la meteo aléatoirement (1 chance sur 20 d'avoir une urgence meteo)
     public void NouvelleMeteo()
     {
-        Urgence = false; 
+        Urgence = false;
         Random rand = new Random();
         switch (rand.Next(20))
         {

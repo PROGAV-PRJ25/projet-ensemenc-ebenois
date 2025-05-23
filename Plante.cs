@@ -26,6 +26,7 @@ public abstract class Plante
         Engrais = false;
         Protege = false;
     }
+    //Met à jour l'état d'affichage de la plante
     public void UpdateEtat()
     {
         if (Croissance == 0)
@@ -42,43 +43,45 @@ public abstract class Plante
         }
     }
     public virtual string EtatImage() { return ""; }
+    //Donne les actions possibles pour un terrain avec  un légume
     public string[] ActionPossible(Inventaire inventaire, Climat climat)
     {
         if (inventaire.Engrais != 0)
         {
             if (climat.Urgence == true)
             {
-                return ["Deterrer", "Arroser", "Engrais","Proteger", "Recolter", "Faire du bruit","Quitter"];
+                return ["Deterrer", "Arroser", "Engrais", "Proteger", "Recolter", "Faire du bruit", "Quitter"];
             }
             else
             {
-                return ["Deterrer", "Arroser", "Engrais", "Recolter", "Faire du bruit","Quitter"];
+                return ["Deterrer", "Arroser", "Engrais", "Recolter", "Faire du bruit", "Quitter"];
             }
         }
         else
         {
             if (climat.Urgence == true)
             {
-                return ["Deterrer", "Arroser","Proteger", "Faire du bruit", "Recolter","Quitter"];
+                return ["Deterrer", "Arroser", "Proteger", "Faire du bruit", "Recolter", "Quitter"];
             }
             else
             {
-                return ["Deterrer", "Arroser", "Recolter", "Faire du bruit","Quitter"];
+                return ["Deterrer", "Arroser", "Recolter", "Faire du bruit", "Quitter"];
             }
         }
     }
+    //Fais pousser la plante si les conditions sont réunies
     public void Grandir(Terrain terrain, Climat climat)
     {
-        if (Croissance == TempsCroissance)
+        if (Croissance == TempsCroissance) //si elle est à taille adulte
         {
-            if (JourAvantPourri == 0)
+            if (JourAvantPourri == 0) //si elle est pourri
             {
-                terrain.Deterrer();
+                terrain.Deterrer(); //elle meurt
                 JourAvantPourri = 1;
             }
             else
             {
-                JourAvantPourri -= 1;
+                JourAvantPourri -= 1; //elle pourrie
             }
         }
         if (Croissance < TempsCroissance)
@@ -105,32 +108,30 @@ public abstract class Plante
             }
             else
             {
-                if (NombreDeJourNonArrosé > 1)
+                if (NombreDeJourNonArrosé > 1) //si elle est pas arrosée
                 {
                     terrain.Deterrer();
-                    NombreDeJourNonArrosé = 0;
+                    NombreDeJourNonArrosé = 0; //elle meurt
                 }
                 else
                 {
-                    NombreDeJourNonArrosé += 1;
+                    NombreDeJourNonArrosé += 1; //on retient
                 }
             }
         }
-
         // Mise à jour de l'état du légume après la croissance
         UpdateEtat();
-
         // Réinitialisation des états
         Engrais = false;
         Arrosé = false;
         Protege = false;
     }
-
+    //Arrose le légume
     public void Arroser()
     {
         Arrosé = true;
     }
-
+    //Récolte le légume
     public void Recolter()
     {
         NombreDeJourNonArrosé = 0;
@@ -140,10 +141,12 @@ public abstract class Plante
         Engrais = false;
         Protege = false;
     }
+    //Met de l'engrais sur le légume
     public void MettreEngrais()
     {
         Engrais = true;
     }
+    //Protege le légume
     public void Proteger()
     {
         Protege = true;

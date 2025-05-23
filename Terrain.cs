@@ -1,11 +1,11 @@
 public abstract class Terrain
 {
-    public bool Rongeur {get; set;}
+    public bool Rongeur { get; set; }
     public Plante Legume { get; set; }
-    public int Pluviometrie {get; protected set;}
-    public abstract string Type { get;}
-    public abstract string Image { get;}
-    public int[] Coordonnées {get; private set;}
+    public int Pluviometrie { get; protected set; }
+    public abstract string Type { get; }
+    public abstract string Image { get; }
+    public int[] Coordonnées { get; private set; }
 
     public Terrain(int[] coordonnées)
     {
@@ -13,7 +13,7 @@ public abstract class Terrain
         Legume = null;
         Rongeur = false;
     }
-
+    //Le terrain a 1chance sur 5 d'être attaqué par un rongeur
     public void Attaque()
     {
         Random rand = new Random();
@@ -24,7 +24,6 @@ public abstract class Terrain
                 break;
         }
     }
-
     public override string ToString()
     {
         string message = "";
@@ -38,7 +37,7 @@ public abstract class Terrain
         }
         return message.PadRight(2);
     }
-
+    //Plante un légume sur le terrain
     public void Planter(string legume)
     {
         switch (legume)
@@ -69,24 +68,23 @@ public abstract class Terrain
                 break;
         }
     }
-
+    //Vérifie si le terrain est libre
     public bool EmplacementLibre()
     {
-        if(Legume!=null) {return(false);}
-        else {return(true);}
+        if (Legume != null) { return (false); }
+        else { return (true); }
     }
-
-     //Arrose un légume
+    //Arrose un légume
     public void Arroser()
     {
         Legume.Arroser();
     }
-
     //Deterre un légume
     public void Deterrer()
     {
-        Legume=null;
+        Legume = null;
     }
+    //Recolte le légume
     public void Recolter()
     {
         if (!Legume.Vivace)
@@ -98,16 +96,14 @@ public abstract class Terrain
             Legume.Recolter();
         }
     }
+    //Protege le légume
     public void Proteger()
     {
         Legume.Proteger();
     }
-
     //Met de l'engrais sur un légume
     public void MettreEngrais()
     {
         Legume.MettreEngrais();
     }
-
-
 }

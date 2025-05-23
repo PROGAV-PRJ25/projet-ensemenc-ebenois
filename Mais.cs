@@ -1,4 +1,4 @@
-public class Mais:Plante
+public class Mais : Plante
 {
     public override string[] Image => ["🌽"];
     public override string GoûtTerrain => "Terre";
@@ -8,13 +8,13 @@ public class Mais:Plante
     public override int NombreDeFuits => 1;
     public override string Nom => "Maïs";
     public override int TempsCroissance => 10;
-    public Mais(int nombre):base(nombre){}
+    public Mais(int nombre) : base(nombre) { }
     public override string EtatImage()
     {
         switch (Croissance)
         {
             default:
-                return(Image[0]);
+                return (Image[0]);
         }
     }
 }

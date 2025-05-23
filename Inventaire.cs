@@ -11,20 +11,19 @@ public class Inventaire
         Engrais = 3;
         Serre = 3;
     }
-
+    //Retire le légume du terrain
     public void RetirerLegume(Plante legume)
     {
         ListLegumes.Remove(legume);
     }
-
     //Ajouter dans l'inventaire un légume
-    public void Ajouter(string nom,int nombre)
+    public void Ajouter(string nom, int nombre)
     {
-        if (TrouverLegume(nom)!=null)
+        if (TrouverLegume(nom) != null)
         {
-            TrouverLegume(nom).Graine+=nombre;
+            TrouverLegume(nom).Graine += nombre;
         }
-        else 
+        else
         {
             switch (nom)
             {
@@ -51,20 +50,19 @@ public class Inventaire
                     break;
                 case "Piment":
                     ListLegumes.Add(new Piment(nombre));
-                    break;                     
-                }
+                    break;
             }
+        }
     }
-
+    //Trouve si on possède bien le légume ainsi que des graine de ce légume (pas juste une instance sans graine)
     public Plante TrouverLegume(string nom)
     {
         foreach (Plante legume in ListLegumes)
         {
-            if(legume.Nom==nom && legume.Graine!=0) {return legume;}
+            if (legume.Nom == nom && legume.Graine != 0) { return legume; }
         }
         return null;
     }
-
     public override string ToString()
     {
         string message = $"▪ Argent: {Argent}$\n▪ Engrais: {Engrais}$\n";

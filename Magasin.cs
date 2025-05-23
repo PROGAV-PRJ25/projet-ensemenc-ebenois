@@ -1,6 +1,6 @@
 public class Magasin
 {
-    public List<Plante> ListLegumes {get; set;}
+    public List<Plante> ListLegumes { get; set; }
 
     public Magasin()
     {

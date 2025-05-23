@@ -8,7 +8,6 @@ public class Potager
     public Inventaire? Inventaire { get; private set; }
     public ConsoleColor Couleur { get; private set; }
     public Magasin? Magasin { get; private set; }
-
     public Potager(int[] size, string pays)
     {
         Couleur = Couleur;
@@ -33,7 +32,6 @@ public class Potager
         GénérateurDeTerrain(Climat);
         ChargerPotager();
     }
-
     //Génération du terrain
     //Génère la bordure du potager et lance SPirale()
     private void GénérateurDeTerrain(Climat Climat)
@@ -268,16 +266,13 @@ public class Potager
         // Étape 2 : remplissage progressif en moyenne avec les voisins
         Spirale();
     }
-
     //Selectionne chaque terrain en suivant une forme de spirale et lance BruitGeneration()
     public void Spirale()
     {
-
         int top = 1;
         int bottom = (Size[1] - 1) - 1;
         int left = 1;
         int right = (Size[0] - 1) - 1;
-
         while (top <= bottom && left <= right)
         {
             // Remplir la rangée du haut
@@ -304,20 +299,20 @@ public class Potager
             }
         }
     }
-
     //Génère un terrain en fonction de Voisin() et d'un bruit
     public void BruitGeneration(int x, int y)
     {
         Random rand = new Random();
-        (int count, float sum) = Voisin(x, y,Climat);
-        // Moyenne avec un bruit
+        (int count, float sum) = Voisin(x, y, Climat);
+        //Moyenne avec un bruit
         double average = (double)sum / count;
-        // Ajout d'un décalage aléatoire
+        //Ajout d'un décalage aléatoire
         double noise = rand.NextDouble() * 0.6 - 0.3; // bruit entre -0.3 et 0.3
         double finalValue = average + noise;
-        // Clamp et arrondi à 0, 1 ou 2
+        //Clamp et arrondi à 0, 1 ou 2
         int value = (int)Math.Round(finalValue);
         value = Math.Max(0, Math.Min(2, value));
+        //Choisi le terrain dominant en fonction su pays
         switch (Climat.Pays)
         {
             case "France":
@@ -363,15 +358,14 @@ public class Potager
                 }
                 break;
         }
-        
-    }
 
+    }
     //Regarde les terrains de ses voisins
     public (int, float) Voisin(int x, int y, Climat climat)
     {
         float sum = 0;
         int count = 0;
-        int[] valeurTerre = [0,0,0];
+        int[] valeurTerre = [0, 0, 0];
         switch (climat.Pays)
         {
             case "France":
@@ -381,7 +375,7 @@ public class Potager
                 valeurTerre = [0, 2, 1];
                 break;
             case "Placinland":
-                valeurTerre =[1,2,0];
+                valeurTerre = [1, 2, 0];
                 break;
         }
         // voisin du haut
@@ -448,7 +442,7 @@ public class Potager
             {
                 switch (TrouverTerrain([x, y + 1]).Type)
                 {
-                  case "Terre":
+                    case "Terre":
                         sum += valeurTerre[1];
                         break;
                     case "Argile":
@@ -464,7 +458,6 @@ public class Potager
         return (count, sum);
     }
     //
-
     //lance la simulation
     public void ChargerPotager()
     {
@@ -474,7 +467,6 @@ public class Potager
             continuer = NouveauSemaine();
         }
     }
-
     //Affiche seuleument le potager en fonction de la selection du joueur
     public void AfficherPotager(int[] selectedIndex)
     {
@@ -522,11 +514,9 @@ public class Potager
         }
         Console.WriteLine("o\n");
     }
-
-    //Affiche le calpin
+    //Affiche la bordure du haut du calpin
     public void AfficherCalpinBordureHaut(int Size, string titre)
     {
-        //Bordure
         Console.ForegroundColor = Couleur;
         Console.Write("▛");
         for (int i = 0; i < Size / 2; i++) { Console.Write("▀"); }
@@ -537,6 +527,7 @@ public class Potager
         for (int i = 0; i < Size / 2; i++) { Console.Write("▀"); }
         Console.Write("▜\n");
     }
+    //Affiche la bordure du bas du calpin
     public void AfficherCalpinBordureBas(int Size, string titre)
     {
         Console.ForegroundColor = Couleur;
@@ -546,8 +537,7 @@ public class Potager
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Utilisez les flèches ↑ ↓ pour naviguer, Entrée pour sélectionner :\n");
     }
-
-    //Trouve le terrain aus coordonées
+    //Trouve le terrain aux coordonées données
     public Terrain TrouverTerrain(int[] position)
     {
         foreach (Terrain terrain in ListTerrains)
@@ -559,7 +549,7 @@ public class Potager
         }
         return null;
     }
-
+    //Passe à la prochaine semaine
     public void PasserSemaine()
     {
         foreach (Terrain terrain in ListTerrains)
@@ -583,13 +573,13 @@ public class Potager
         {
             if (terrain.Legume != null)
             {
-                terrain.Attaque();              
+                terrain.Attaque();
             }
         }
         AttaqueRongeur = Attaque();
         Semaine += 1;
     }
-
+    //Regarde si un des terrains subit une attaque de rongeurs
     public bool Attaque()
     {
         foreach (Terrain terrain in ListTerrains)
@@ -601,8 +591,7 @@ public class Potager
         }
         return false;
     }
-
-    //Passe à un nouveau Semaine
+    //Lance la semaine
     public bool NouveauSemaine()
     {
         int[] selectedIndex;
@@ -673,14 +662,13 @@ public class Potager
         } while (!nouveauSemaine);
         return (continuer);
     }
-
+    //Affiche l'inventaire
     public void AfficherInventaire(int[] selectedIndex)
     {
         int size = 100;
         string titre = $"INVENTAIRE - Semaine {Semaine + 1}";
 
         AfficherPotager(selectedIndex);
-        //Bordure
         AfficherCalpinBordureHaut(size, titre);
         for (int i = 0; i < Inventaire.ListLegumes.Count(); i++)
         {
@@ -725,14 +713,12 @@ public class Potager
         AfficherCalpinBordureBas(size, titre);
         Console.ReadKey();
     }
-
+    //Affiche le magasin
     public int[] AfficherMagasin(int[] selectedIndex, int[] positionInitiale)
     {
         int size = 100;
         string titre = $"MAGASIN - Semaine {Semaine + 1}";
-
         AfficherPotager(positionInitiale);
-        //Bordure
         AfficherCalpinBordureHaut(size, titre);
         Console.ForegroundColor = Couleur;
         Console.Write("▌");
@@ -795,7 +781,7 @@ public class Potager
         }
         Console.ForegroundColor = Couleur;
         Console.Write("▐\n▌");
-        if (selectedIndex[1] == Magasin.ListLegumes.Count()+1)
+        if (selectedIndex[1] == Magasin.ListLegumes.Count() + 1)
         {
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
@@ -813,7 +799,7 @@ public class Potager
         }
         Console.ForegroundColor = Couleur;
         Console.Write("▐\n▌");
-        if (selectedIndex[1] == Magasin.ListLegumes.Count()+2)
+        if (selectedIndex[1] == Magasin.ListLegumes.Count() + 2)
         {
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Black;
@@ -834,7 +820,6 @@ public class Potager
         AfficherCalpinBordureBas(size, titre);
         return selectedIndex;
     }
-
     //Affiche la meteo
     public int[] AfficherMeteoEtRetour(int[] selectedIndex)
     {
@@ -852,7 +837,6 @@ public class Potager
         Console.Write("▐\n▌");
         for (int i = 0; i < size + titre.Length; i++) { Console.Write(" "); }
         Console.Write("▐\n");
-
         for (int i = 0; i < actionPossible.Length; i++)
         {
             Console.ForegroundColor = Couleur;
@@ -870,34 +854,25 @@ public class Potager
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write($"{i + 1}. {actionPossible[i]}");
             }
-
             Console.ForegroundColor = Couleur;
             for (int j = 0; j < size + titre.Length - ($"{i + 1}. {actionPossible[i]}".Length); j++)
             {
                 Console.Write(" ");
             }
-
             Console.Write("▐\n");
         }
-
         AfficherCalpinBordureBas(size, titre);
         return (selectedIndex);
     }
-
-    //Affiche un récapitulatif de divers informations
     //Affiche les actions possibles
     public (string[] actionpossible, int selectedIndex) AfficherAction(int positionInitialeIndex, int[] positionInitialePotager)
     {
         int Size = 50;
         string titre = $"ACTION - Semaine {Semaine + 1}";
         int selectedIndex = positionInitialeIndex;
-
         AfficherCalpinBordureHaut(Size, titre);
-
         string[] actionPossible = [];
-
         var terrain = TrouverTerrain(positionInitialePotager);
-
         if (terrain?.Legume == null)
         {
             if (Inventaire.ListLegumes.Any())
@@ -913,12 +888,10 @@ public class Potager
         {
             actionPossible = terrain.Legume.ActionPossible(Inventaire, Climat);
         }
-
         for (int i = 0; i < actionPossible.Length; i++)
         {
             Console.ForegroundColor = Couleur;
             Console.Write("▌");
-
             if (i == selectedIndex)
             {
                 Console.BackgroundColor = ConsoleColor.White;
@@ -931,21 +904,17 @@ public class Potager
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write($"{i + 1}. {actionPossible[i]}");
             }
-
             Console.ForegroundColor = Couleur;
             for (int j = 0; j < Size + titre.Length - ($"{i + 1}. {actionPossible[i]}".Length); j++)
             {
                 Console.Write(" ");
             }
-
             Console.Write("▐\n");
         }
-
         AfficherCalpinBordureBas(Size, titre);
         return (actionPossible, selectedIndex);
     }
-
-
+    //Affiche les graines dans l'inventaire
     public (string[] Graine, int selectedIndex) AfficherGraine(int positionInitialeIndex, int[] positionInitialePotager)
     {
         int Size = 50;
@@ -986,7 +955,6 @@ public class Potager
         AfficherCalpinBordureBas(Size, titre);
         return (listGraine, selectedIndex);
     }
-
     //Plante un légume
     public void Planter(string nom, int[] position)
     {
@@ -1037,8 +1005,7 @@ public class Potager
             }
         }
     }
-
-    //Affiche le légume séléctionné
+    //Affiche le légume séléctionné et ses informations
     public void AfficherLegume(int[] selectedIndex, int ligne)
     {
         if (ligne == 0)
@@ -1116,7 +1083,6 @@ public class Potager
         }
         Console.Write("\n");
     }
-
     //Affiche le potager et la météo
     public int[] PotagerEtMeteo(int[] positionInitiale)
     {
@@ -1147,7 +1113,6 @@ public class Potager
         } while (key != ConsoleKey.Enter);
         return (selectedIndex);
     }
-
     //Affiche le potager et les actions possibles
     public void PotagerEtAction(int[] positionInitiale)
     {
@@ -1185,7 +1150,6 @@ public class Potager
                     break;
             }
         } while (key != ConsoleKey.Enter);
-
         string[] Graine = [""];
         switch (actionpossible[selectedIndex])
         {
@@ -1216,7 +1180,7 @@ public class Potager
                 terrain.Deterrer();
                 break;
             case "Faire du bruit":
-                terrain.Rongeur=false;
+                terrain.Rongeur = false;
                 break;
             case "Engrais":
                 terrain.MettreEngrais();
@@ -1238,6 +1202,7 @@ public class Potager
                 break;
         }
     }
+    //Gère les conséquences suite à l'état d'alerte
     public void Consequence()
     {
         foreach (Terrain terrain in ListTerrains)
@@ -1256,6 +1221,7 @@ public class Potager
             }
         }
     }
+    //Regarde si les terrains voisins au terrain donné sont libres
     public bool VoisinLibre(Terrain parcelle)
     {
         foreach (Terrain terrain in ListTerrains)
@@ -1267,9 +1233,9 @@ public class Potager
                     return (false);
                 }
             }
-             if (terrain.Coordonnées[1] == parcelle.Coordonnées[1])
+            if (terrain.Coordonnées[1] == parcelle.Coordonnées[1])
             {
-                if (((terrain.Coordonnées[0] == parcelle.Coordonnées[0]+1) || (terrain.Coordonnées[0] == parcelle.Coordonnées[0]-1))&&terrain.Legume!=null)
+                if (((terrain.Coordonnées[0] == parcelle.Coordonnées[0] + 1) || (terrain.Coordonnées[0] == parcelle.Coordonnées[0] - 1)) && terrain.Legume != null)
                 {
                     return (false);
                 }

@@ -1,4 +1,4 @@
-public class Champignon:Plante
+public class Champignon : Plante
 {
     public override string[] Image => ["🍄"];
     public override string GoûtTerrain => "Sable";
@@ -8,13 +8,13 @@ public class Champignon:Plante
     public override int NombreDeFuits => 1;
     public override int TempsCroissance => 12;
     public override bool Vivace => true;
-    public Champignon(int nombre) : base(nombre)   {}
+    public Champignon(int nombre) : base(nombre) { }
     public override string EtatImage()
     {
         switch (Croissance)
         {
-            default :
-                return(Image[0]);
+            default:
+                return (Image[0]);
         }
     }
 }
