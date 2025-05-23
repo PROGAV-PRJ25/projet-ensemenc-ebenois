@@ -5,7 +5,7 @@ public class Jeu{
         bool quitter = false;
         do{
             AfficherTitle();
-            switch (AfficherMenu(["1. Nouvelle Partie 🌾","2. Charger une Partie 🧺","3. Options ⚙️","4. Crédits 🖋️","5. Quitter 🌙"])){
+            switch (AfficherMenu(["1. Nouvelle Partie 🌾","2. Charger une Partie 🧺","3. Crédits 🖋️","4. Quitter 🌙"])){
                 case 0:
                     switch (AfficherMenu(["1. France FR","2. Madagascar MD","3. Placinland PL","4. Retour"]))
                     {
@@ -26,10 +26,10 @@ public class Jeu{
                     int numéroPartie = ChargerSauvegarde();
                     if (numéroPartie!=Sauvegardes.Count()) {Sauvegardes[numéroPartie].ChargerPotager();}
                     break;
-                case 3:
+                case 2:
                     Credit();
                     break;
-                case 4:
+                case 3:
                     quitter = true;
                     break;
             }
@@ -130,7 +130,7 @@ public class Jeu{
         {
             Console.Clear();
             AfficherTitle();
-            Console.WriteLine("────────────────────────────────────────────────────────────────────────");
+            Console.WriteLine("────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
             Console.WriteLine("Utilisez les flèches ↑ ↓ pour naviguer, Entrée pour sélectionner :\n");
             for (int i = 0; i < Sauvegardes.Count(); i++)
             {
@@ -139,12 +139,12 @@ public class Jeu{
                     // Met en surbrillance l'élément sélectionné
                     Console.ForegroundColor = ConsoleColor.Black;
                     Console.BackgroundColor = ConsoleColor.White;
-                    Console.WriteLine($"{i+1}. {Sauvegardes[i].Climat}");
+                    Console.WriteLine($"{i+1}. Semaine {Sauvegardes[i].Semaine+1} - Taille: {Sauvegardes[i].Size[0]*Sauvegardes[i].Size[1]} - {Sauvegardes[i].Climat}");
                     Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine($"{i+1}. {Sauvegardes[i].Climat}");
+                    Console.WriteLine($"{i+1}. Semaine {Sauvegardes[i].Semaine+1} - Taille: {Sauvegardes[i].Size[0]*Sauvegardes[i].Size[1]} - {Sauvegardes[i].Climat}");
                 }
             }
             if (selectedIndex == Sauvegardes.Count())
@@ -159,7 +159,7 @@ public class Jeu{
                 {
                     Console.WriteLine($"{Sauvegardes.Count()+1}. Quitter");
                 }
-            Console.WriteLine("────────────────────────────────────────────────────────────────────────");
+            Console.WriteLine("────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
             key = Console.ReadKey(true).Key;
             switch (key)
             {

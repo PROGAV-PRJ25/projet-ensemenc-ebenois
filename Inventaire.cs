@@ -1,15 +1,18 @@
 public class Inventaire
 {
     public int Argent;
-    public List<Legume> ListLegumes {get; set;}
-
+    public List<Plante> ListLegumes;
+    public int Engrais;
+    public int Serre;
     public Inventaire()
     {
-        ListLegumes = new List<Legume>();
-        Argent = 200;
+        ListLegumes = new List<Plante>();
+        Argent = 50;
+        Engrais = 3;
+        Serre = 3;
     }
 
-    public void RetirerLegume(Legume legume)
+    public void RetirerLegume(Plante legume)
     {
         ListLegumes.Remove(legume);
     }
@@ -24,28 +27,47 @@ public class Inventaire
         else 
         {
             switch (nom)
-                {
-                    case "Patate":
-                        ListLegumes.Add(new Patate(nombre));
-                        break;
-                    case "Champignon":
-                        ListLegumes.Add(new Champignon(nombre));
-                        break;
+            {
+                case "Patate":
+                    ListLegumes.Add(new Patate(nombre));
+                    break;
+                case "Champignon":
+                    ListLegumes.Add(new Champignon(nombre));
+                    break;
+                case "Tomate":
+                    ListLegumes.Add(new Tomate(nombre));
+                    break;
+                case "Ail":
+                    ListLegumes.Add(new Ail(nombre));
+                    break;
+                case "Carotte":
+                    ListLegumes.Add(new Carotte(nombre));
+                    break;
+                case "Maïs":
+                    ListLegumes.Add(new Mais(nombre));
+                    break;
+                case "Oignon":
+                    ListLegumes.Add(new Oignon(nombre));
+                    break;
+                case "Piment":
+                    ListLegumes.Add(new Piment(nombre));
+                    break;                     
                 }
             }
     }
 
-    public Legume TrouverLegume(string nom)
+    public Plante TrouverLegume(string nom)
     {
-        foreach (Legume legume in ListLegumes)
+        foreach (Plante legume in ListLegumes)
         {
             if(legume.Nom==nom && legume.Graine!=0) {return legume;}
         }
         return null;
     }
 
-    public override string ToString(){
-        string message = $"▪ Argent: {Argent}$\n";
+    public override string ToString()
+    {
+        string message = $"▪ Argent: {Argent}$\n▪ Engrais: {Engrais}$\n";
         return message;
     }
 }
