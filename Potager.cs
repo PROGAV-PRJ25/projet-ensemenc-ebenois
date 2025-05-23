@@ -543,6 +543,8 @@ public class Potager
         Console.Write("▙");
         for (int i = 0; i < Size + titre.Length; i++) Console.Write("▄");
         Console.Write("▟\n");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("Utilisez les flèches ↑ ↓ pour naviguer, Entrée pour sélectionner :\n");
     }
 
     //Trouve le terrain aus coordonées
