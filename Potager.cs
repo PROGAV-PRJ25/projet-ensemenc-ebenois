@@ -473,14 +473,8 @@ public class Potager
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Votre Potager:");
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.Write("o");
-        for (int x = 0; x < Size[0]; x++) { Console.Write("---"); }
-        Console.Write("o\n");
         for (int y = 0; y < Size[1]; y++)
         {
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write("¦");
             for (int x = 0; x < Size[0]; x++)
             {
                 if (x == selectedIndex[0] && y == selectedIndex[1])
@@ -495,8 +489,6 @@ public class Potager
                     Console.Write(TrouverTerrain([x, y]).ToString());
                 }
             }
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write("¦");
             if (selectedIndex[0] < Size[0] && selectedIndex[1] < Size[1])
             {
                 AfficherLegume(selectedIndex, y);
@@ -506,13 +498,7 @@ public class Potager
                 Console.Write("\n");
             }
         }
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.Write("o");
-        for (int x = 0; x < Size[0]; x++)
-        {
-            Console.Write("---");
-        }
-        Console.WriteLine("o\n");
+        Console.WriteLine("\n");
     }
     //Affiche la bordure du haut du calpin
     public void AfficherCalpinBordureHaut(int Size, string titre)
